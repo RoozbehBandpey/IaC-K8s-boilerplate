@@ -296,7 +296,7 @@ Create a new `dashboard-admin.yaml` file and paste the above content.
 We can apply the configuration using the following line:
 
 ```shell
-$ kubectl apply -f dashboard-admin.yaml
+$ kubectl apply -f kubernetes_service_mesh/yaml/dashboard-admin.yaml
 serviceaccount/admin-user created
 clusterrolebinding.rbac.authorization.k8s.io/admin-user created
 ```
@@ -306,29 +306,28 @@ We need to discover the created users secret access token, to gain access to the
 ```shell
 $ kubectl -n kubernetes-dashboard get secret
 NAME                               TYPE                                  DATA   AGE
-admin-user-token-22554             kubernetes.io/service-account-token   3      32s
-default-token-8fjcr                kubernetes.io/service-account-token   3      76s
-kubernetes-dashboard-certs         Opaque                                0      76s
-kubernetes-dashboard-csrf          Opaque                                1      76s
-kubernetes-dashboard-key-holder    Opaque                                2      75s
-kubernetes-dashboard-token-zmvj4   kubernetes.io/service-account-token   3      76s
+admin-user-token-bjpzl             kubernetes.io/service-account-token   3      35s
+default-token-rgtx5                kubernetes.io/service-account-token   3      2m1s
+kubernetes-dashboard-certs         Opaque                                0      2m1s
+kubernetes-dashboard-csrf          Opaque                                1      2m1s
+kubernetes-dashboard-key-holder    Opaque                                2      2m1s
+kubernetes-dashboard-token-8ffp8   kubernetes.io/service-account-token   3      2m1s
 ```
 
 Find the secret that belongs to the `admin-user-token` and let `kubectl describe` it to see the content of the secret:
 
 ```shell
-$ kubectl -n kubernetes-dashboard describe secret admin-user-token-smw2j
-Name:         admin-user-token-22554
+$ kubectl -n kubernetes-dashboard describe secret admin-user-token-bjpzl
+Name:         admin-user-token-bjpzl
 Namespace:    kubernetes-dashboard
 Labels:       <none>
 Annotations:  kubernetes.io/service-account.name: admin-user
-              kubernetes.io/service-account.uid: 02a8e2e7-c25d-48a2-b8b8-f6ce99e77a5d
+              kubernetes.io/service-account.uid: 503ea46a-152f-450a-b93b-f0ca3b98a68f
 
 Type:  kubernetes.io/service-account-token
 
 Data
 ====
-ca.crt:     1765 bytes
 namespace:  20 bytes
 token:      XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ```
@@ -349,12 +348,9 @@ The process keeps running until you interrupt it using `Ctrl-C`. Let's keep it r
 [Access the dashboard](http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/)
 and login using the token you've acquired for the _admin-user_ `ServiceAccount`.
 
-![Dashboard Login](./img/dashboard-login.png)
 
 Take your time to explore the dashboard. Make use of the `Namespace` selector to navigate the
 different namespaces.
-
-![Dashboard Overview](./img/all-namespaces-dashboard.png)
 
 > **Security Note:** The dashboard component is considered a "security risk", because it is an additional way to access your cluster - and you have to take care of securing it. Normally, you would not install the dashboard component in production clusters. There is an option for disabling the dashboard, even after installation: `az aks disable-addons -a kube-dashboard -n my_cluster_name -g my_cluster_resource_group`.
 
@@ -384,8 +380,3 @@ Examples:
 
 ...
 ```
-
-## Questions
-
-What do the different flags (`-i`, `-t`, `--restart=Never`, `--rm=True`) used in the `kubectl run`
-command do?
