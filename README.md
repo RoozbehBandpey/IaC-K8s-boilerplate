@@ -1,8 +1,6 @@
-# terraform-IaC-mlops
-Infrastructure-as-code for machine learning operationalization
+# Boilerplate Infrastructure as Code
+Boilerplate Infrastructure-as-code for variety of use cases
 
 
-Terraform is the infrastructure as code offering from HashiCorp. It is a tool for building, changing, and managing infrastructure in a safe, repeatable way.
-
-## Installation
-Grab your appropriate pre-compiled binary package form [Download Terraform](https://www.terraform.io/downloads.html)
+# Kubernetes Service Mesh
+Head over to [kubernetes_service_mesh](./kubernetes_service_mesh/README.md)
