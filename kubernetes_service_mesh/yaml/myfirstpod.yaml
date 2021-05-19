@@ -1,0 +1,13 @@
+# Content of file myfirstpod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myfirstpod
+spec:
+  containers:
+    - image: k8trainingacr.azurecr.io/test:2.0
+      name: myfirstpod
+      resources: {}
+      ports:
+        - containerPort: 80
+  restartPolicy: Never
