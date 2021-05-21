@@ -719,23 +719,16 @@ deployment.apps/mssql-deployment created
 $ kubectl get pods -w
 
 NAME                                READY   STATUS              RESTARTS   AGE
-mssql-deployment-5559884974-q2j4w   0/1     ContainerCreating   0          5s
-mssql-deployment-5559884974-q2j4w   1/1     Running             0          39s
+mssql-deployment-5849d47ff-czntn   0/1     ContainerCreating   0          25s
+mssql-deployment-5849d47ff-czntn   1/1     Running             0          34s
 ```
 
 After about 30-40 sec, you should see that the pod with SQL Server 2019 is up and running. Also, let's have a look at the deployment.
 
 ```shell
-$ kubectl get deployments
-
-NAME               READY   UP-TO-DATE   AVAILABLE   AGE
-mssql-deployment   1/1     1            1           100s
-
-$ kubectl describe deployment mssql-deployment
-
 Name:                   mssql-deployment
 Namespace:              default
-CreationTimestamp:      Tue, 27 Oct 2020 09:34:28 +0100
+CreationTimestamp:      Wed, 19 May 2021 14:49:40 +0200
 Labels:                 <none>
 Annotations:            deployment.kubernetes.io/revision: 1
 Selector:               app=mssql
@@ -762,11 +755,11 @@ Conditions:
   Available      True    MinimumReplicasAvailable
   Progressing    True    NewReplicaSetAvailable
 OldReplicaSets:  <none>
-NewReplicaSet:   mssql-deployment-5559884974 (1/1 replicas created)
+NewReplicaSet:   mssql-deployment-5849d47ff (1/1 replicas created)
 Events:
-  Type    Reason             Age    From                   Message
-  ----    ------             ----   ----                   -------
-  Normal  ScalingReplicaSet  2m25s  deployment-controller  Scaled up replica set mssql-deployment-5559884974 to 1
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  3m1s  deployment-controller  Scaled up replica set mssql-deployment-5849d47ff to 1
 ```
 
 As we need to connect to this pod over the network, let's find out what IP address has been assigned to it.
@@ -774,16 +767,17 @@ As we need to connect to this pod over the network, let's find out what IP addre
 ```shell
 $ kubectl get pods -o wide
 
-NAME                                READY   STATUS    RESTARTS   AGE     IP           NODE                                NOMINATED NODE   READINESS GATES
-mssql-deployment-5559884974-q2j4w   1/1     Running   0          4m44s   10.244.0.5   aks-nodepool1-11985439-vmss000000   <none>           <none>
+NAME                               READY   STATUS    RESTARTS   AGE     IP           NODE                                NOMINATED NODE   READINESS GATES
+mssql-deployment-5849d47ff-czntn   1/1     Running   0          3m53s   10.244.2.5   aks-nodepool1-11128002-vmss000001   <none>           <none>
+myfirstpod                         1/1     Running   0          19h     10.244.1.3   aks-nodepool1-11128002-vmss000002   <none>           <none>
 ```
 
-The address may vary in your environment, for the sample here, it's `10.244.0.5`. Please note the address down, as you will need it in the next step.
+The address may vary in your environment, for the sample here, it's `10.244.2.5`. Please note the address down, as you will need it in the next step.
 
 Now, we can deploy a simple API that is able to manage `Contacts` objects, that means Create/Read/Update/Delete contacts of a very simple CRM app. The image needs to be built upfront and put in your container registry. So, please go to the folder `day7/apps/dotnetcore/Scm` and build the API image:
 
 ```shell
-$ docker build -t <ACR_NAME>.azurecr.io/adc-api-sql:1.0 -f ./Adc.Scm.Api/Dockerfile .
+$ docker build -t k8trainingacr.azurecr.io/adc-api-sql:1.0 -f ./Adc.Scm.Api/Dockerfile .
 
 Sending build context to Docker daemon  64.51kB
 Step 1/11 : FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
@@ -805,7 +799,7 @@ Successfully tagged adccontainerreg.azurecr.io/adc-api-sql:1.0
 After a successful build, push the local image to the Azure Container Registry:
 
 ```shell
-$ docker push <ACR_NAME>.azurecr.io/adc-api-sql:1.0
+$ docker push k8trainingacr.azurecr.io/adc-api-sql:1.0
 
 The push refers to repository [adccontainerreg.azurecr.io/adc-api-sql]
 11185412b6d4: Pushed
@@ -1297,8 +1291,6 @@ loadbalancer-contactsapi   LoadBalancer   10.0.163.1    52.236.151.220   8080:30
 
 As you can see, after a short amount of time, the `loadbalancer-contactsapi` is receiving an external IP adress from the Azure Loadbalancer. Our contacts API should now be accessible - in this case - via <http://52.236.151.220:8080>. If you open that link in a browser (of course, replace the IP adress with the one your service has received), you should see the swagger UI.
 
-![swagger_external](./img/swagger-external.png)
-
 We now have the tools to expose a single service to the internet via the `LoadBalancer` type. This may be okay in a scenario, where you only have few services. But to be clear, this is a "bad pattern". In a production environment, you want to limit the amount of externally available services (IP adresses) to a minimum. And if your application is made of several services or is implementing a microservice-based architectural pattern, using `LoadBalancer` services is a bad practice. Ideally, you only use one public IP adress and manage the external access to the cluster via `Ingress` definitions and the corresponding `Ingress Controller`.
 
 ## Ingress
@@ -1307,7 +1299,6 @@ An `Ingress` definition is a way to describe how clients are routed to your serv
 
 The `Ingress Controller` sits in front of many services within a cluster and is the (most of the time) the only service of type `LoadBalancer` with a public IP in Kubernetes, routing traffic to your services and - depending on the implementation - can also add functionality like SSL termination, path rewrites, name based virtual hosts, IP whitelisting etc.
 
-![ingress controller](./img/ingress_controller.png)
 
 ### Installation
 
@@ -1454,8 +1445,8 @@ Save the file and - in a terminal - go to the folder `day7/apps/frontend/scmfe` 
 **Alternative 1 - Build locally:**
 
 ```shell
-docker build -t <ACR_NAME>.azurecr.io/adc-frontend-ui:1.0 .
-docker push <ACR_NAME>.azurecr.io/adc-frontend-ui:1.0
+docker build -t k8trainingacr.azurecr.io/adc-frontend-ui:1.0 .
+docker push k8trainingacr.azurecr.io/adc-frontend-ui:1.0
 ```
 
 **Alternative 2 - Use your Azure Container Registry:**
@@ -1574,3 +1565,5 @@ That looks good, now open a browser and navigate to the website (here: <http://2
 ## Wrap-Up
 
 Congratulations, you have deployed a full-blown application to Kubernetes with a SQL server running inside the cluster. As you might guess, there are a few things now that need to be adjusted. E.g. we added some of the configuration settings - even worse, passwords! - "hard-coded" to manifest files. Also the endpoint configuration for the UI has been baked into the image. In the next challenge, we will adress these issues by using Kubernetes `ConfigMaps` and `Secrets`. You will learn how to configure your application "from outside" by using standard Kubernetes objects.
+
+
