@@ -22,6 +22,19 @@ spec:
               cpu: '500m'
           ports:
             - containerPort: 80
+          volumeMounts:
+            # mount the config volume to path /usr/share/nginx/html/settings
+            - name: frontend-settings
+              mountPath: '/usr/share/nginx/html/settings'
+              readOnly: true
+      volumes:
+        # set volumes at the Pod level, then mount them into containers inside the pod
+        - name: frontend-settings
+          configMap:
+            # specify the name of the ConfigMap to use
+            # we dont't need to specify an array of keys to add as file from the ConfigMap
+            # as the name of the key is settings.js the file is created as settings.js
+            name: frontend-settings
 ---
 apiVersion: v1
 kind: Service

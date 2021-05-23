@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: volumedemo
+  name: volumedemo
+spec:
+  containers:
+    - image: alpine
+      name: volumedemo
+      command: ['sleep', '3600']
+      volumeMounts:
+        # mount the config volume to path /config
+        - name: config
+          mountPath: '/config'
+          readOnly: true
+  volumes:
+    # set volumes at the Pod level, then mount them into containers inside the pod
+    - name: config
+      configMap:
+        # specify the name of the ConfigMap to use
+        name: myfirstmap
+        # an array of keys from the ConfigMap to create as file
+        items:
+          - key: 'myfirstkey'
+            path: 'myfirstkey'
+          - key: 'mysecondkey'
+            path: 'mysecondkey'
