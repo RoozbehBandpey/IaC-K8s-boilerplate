@@ -9,7 +9,7 @@ jobs:
   - job:
   - deployment: KubernetesEnvironmentDeployment
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: '${{ parameters.vmImage }}'
     environment: 'dev'
     variables:
       - group: k8-vg-dev
@@ -17,6 +17,8 @@ jobs:
         value: $(BASE_NAME)-rg-$(ENV)
       - name: STORAGE_NAME
         value: $(BASE_NAME)storage$(ENV)
+      - name: KEYVAULT_NAME
+        value: $(BASE_NAME)-kv-$(ENV)
     strategy:
       runOnce:
         deploy:
@@ -51,4 +53,13 @@ jobs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: inlineScript
               workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-              inlineScript: 'sh check-keyvault.sh $(BASE_NAME) $(ENV) $(RESOURCE_GROUP_NAME)'
+              inlineScript: 'sh check-keyvault.sh $(KEYVAULT_NAME) $(RESOURCE_GROUP_NAME)'
+
+          - task: AzureCLI@1
+            displayName: 'Deployment: Key Vault'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              deploymentMode: $(deploymentMode)
+              inlineScript: |
+                            az keyvault create -n $(KEYVAULT_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)

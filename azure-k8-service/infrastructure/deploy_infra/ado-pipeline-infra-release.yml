@@ -70,5 +70,11 @@ stages:
   jobs:
   - template: ado-template-k8env.yml
     parameters:
-      vmImage: 'ubuntu-latest'
-      environment: 'dev'
+    - name: vmImage
+      displayName: Pool Image
+      type: string
+      default: ubuntu-latest
+    # - name: environment
+    #   displayName: Environment
+    #   type: string
+    #   default: dev
