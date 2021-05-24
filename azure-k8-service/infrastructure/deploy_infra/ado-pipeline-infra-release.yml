@@ -71,3 +71,4 @@ stages:
   - template: ado-template-k8env.yml
     parameters:
       vmImage: 'ubuntu-latest'
+      environment: 'dev'
