@@ -18,6 +18,7 @@ jobs:
   - deployment: ResourceGroupDeployment
     pool:
       vmImage: '${( parameters.vmImage )}'
+    environment: 'dev'
     variables:
       - group: k8-vg-dev
       - name: RESOURCE_GROUP_NAME
