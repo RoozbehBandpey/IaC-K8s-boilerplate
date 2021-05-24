@@ -9,7 +9,7 @@ jobs:
   - job:
   - deployment: KubernetesEnvironmentDeployment
     pool:
-      vmImage: '${{ parameters.vmImage }}'
+      name: '${{ parameters.vmImage }}'
     environment: 'dev'
     variables:
       - group: k8-vg-dev
