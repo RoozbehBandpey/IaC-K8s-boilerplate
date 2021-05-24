@@ -10,7 +10,7 @@ jobs:
   - deployment: KubernetesEnvironmentDeployment
     pool:
       vmImage: '${{ parameters.vmImage }}'
-    environment: 'dev'
+    environment: '${{ parameters.environment }}'
     variables:
       - group: k8-vg-dev
       - name: RESOURCE_GROUP_NAME
@@ -63,3 +63,10 @@ jobs:
               deploymentMode: $(deploymentMode)
               inlineScript: |
                             az keyvault create -n $(KEYVAULT_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
+          - task: AzureCLI@1
+            displayName: 'Deployment: Creating a SAS Token for the storage account'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az storage container generate-sas --account-name $(STORAGE_NAME)--expiry 2022-01-01 --name tfstate --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
