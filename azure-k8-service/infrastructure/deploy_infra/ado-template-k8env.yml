@@ -69,4 +69,4 @@ jobs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            az storage container generate-sas --account-name $(STORAGE_NAME)--expiry 2022-01-01 --name tfstate --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
+                            az storage container generate-sas --account-name $(STORAGE_NAME) --expiry 2022-01-01 --name tfstate --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
