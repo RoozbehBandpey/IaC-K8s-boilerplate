@@ -7,9 +7,9 @@
 
 jobs:
   - job:
-  - deployment: ResourceGroupDeployment
+  - deployment: KubernetesEnvironmentDeployment
     pool:
-      vmImage: '${( parameters.vmImage )}'
+      vmImage: 'ubuntu-latest'
     environment: 'dev'
     variables:
       - group: k8-vg-dev
