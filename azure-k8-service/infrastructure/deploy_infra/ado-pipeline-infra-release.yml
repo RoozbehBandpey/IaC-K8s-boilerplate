@@ -17,7 +17,7 @@ trigger:
   paths:
     include:
     - infrastructure/tf-templates/*
-    - infrastructure/deploy-infra-terraform/*
+    - infrastructure/deploy-infra/*
 pr:
   branches:
     include:
@@ -25,13 +25,13 @@ pr:
   paths:
     include:
     - infrastructure/tf-templates/*
-    - infrastructure/deploy-infra-terraform/*
+    - infrastructure/deploy-infra/*
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-- group: mlops-vg-dev
+- group: k8-vg-dev
 - name: RESOURCE_GROUP_NAME
   value: $(BASE_NAME)-rg-$(ENV)
 - name: WORKSPACE_NAME
