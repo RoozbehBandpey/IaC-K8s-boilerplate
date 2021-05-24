@@ -64,15 +64,10 @@ stages:
   dependsOn: build
   variables:
   - group: k8-vg-dev
-  - name: RESOURCE_GROUP_NAME
-    value: $(BASE_NAME)-rg-$(ENV)
-  - name: STORAGE_NAME
-    value: $(BASE_NAME)storage$(ENV)
   - name: armArtifactName
     value: IaCAndTests
 
   jobs:
   - template: ado-template-k8env.yml
     parameters:
-      environment: RESOURCE_GROUP_NAME
       vmImage: 'ubuntu-latest'
