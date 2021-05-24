@@ -18,7 +18,12 @@ jobs:
   - deployment: ResourceGroupDeployment
     pool:
       vmImage: '${( parameters.vmImage )}'
-    environment: '${( parameters.environment )}'
+    variables:
+      - group: k8-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(ENV)
+      - name: STORAGE_NAME
+        value: $(BASE_NAME)storage$(ENV)
     strategy:
       runOnce:
         deploy:
