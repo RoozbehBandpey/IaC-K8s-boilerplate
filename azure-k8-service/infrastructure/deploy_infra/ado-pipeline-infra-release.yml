@@ -34,8 +34,8 @@ variables:
 - group: k8-vg-dev
 - name: RESOURCE_GROUP_NAME
   value: $(BASE_NAME)-rg-$(ENV)
-- name: WORKSPACE_NAME
-  value: $(BASE_NAME)-aml-$(ENV)
+# - name: WORKSPACE_NAME
+#   value: $(BASE_NAME)-aml-$(ENV)
 
 
 
