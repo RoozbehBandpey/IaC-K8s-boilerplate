@@ -35,7 +35,7 @@ variables:
 - name: RESOURCE_GROUP_NAME
   value: $(BASE_NAME)-rg-$(ENV)
 - name: STORAGE_NAME
-  value: $(BASE_NAME)-storage-$(ENV)
+  value: $(BASE_NAME)storage$(ENV)
 
 
 
