@@ -34,8 +34,8 @@ variables:
 - group: k8-vg-dev
 - name: RESOURCE_GROUP_NAME
   value: $(BASE_NAME)-rg-$(ENV)
-# - name: WORKSPACE_NAME
-#   value: $(BASE_NAME)-aml-$(ENV)
+- name: STORAGE_NAME
+  value: $(BASE_NAME)-storage-$(ENV)
 
 
 
@@ -48,3 +48,18 @@ steps:
     inlineScript: |
                   az group create -n $(RESOURCE_GROUP_NAME) \
                   -l $(LOCATION)
+- task: AzureCLI@1
+  displayName: 'Deployment: Storage'
+  inputs:
+    azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+                  az storage account create -n $(STORAGE_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
+
+- task: AzureCLI@1
+  displayName: 'Deployment: tfstate container'
+  inputs:
+    azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+                  az storage container create -n tfstate --account-name $(STORAGE_NAME)
