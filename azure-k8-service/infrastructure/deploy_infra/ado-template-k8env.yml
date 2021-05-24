@@ -31,6 +31,7 @@ jobs:
               inlineScript: |
                             az group create -n $(RESOURCE_GROUP_NAME) \
                             -l $(LOCATION)
+                            
           - task: AzureCLI@1
             displayName: 'Deployment: Storage'
             inputs:
@@ -38,6 +39,7 @@ jobs:
               scriptLocation: 'inlineScript'
               inlineScript: |
                             az storage account create -n $(STORAGE_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
+
           - task: AzureCLI@1
             displayName: 'Deployment: tfstate container'
             inputs:
@@ -63,6 +65,7 @@ jobs:
               deploymentMode: $(deploymentMode)
               inlineScript: |
                             az keyvault create -n $(KEYVAULT_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
+
           - task: AzureCLI@1
             displayName: 'Deployment: Creating a SAS Token for the storage account'
             inputs:
