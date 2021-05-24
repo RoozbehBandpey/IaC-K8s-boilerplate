@@ -9,7 +9,6 @@ az keyvault show -n "$baseName" -g $resourceGroupName
 if [ $? -eq 0 ]; then
     echo "keyvault recovery deployment"
     echo "##vso[task.setvariable variable=createmode]recover"
-    az keyvault recover -n "$baseName" -g "$resourceGroupName" -l "$location"
 else
     echo "keyvault default deployment"
     echo "##vso[task.setvariable variable=createmode]default"
