@@ -16,16 +16,16 @@ trigger:
     - master
   paths:
     include:
-    - infrastructure/tf-templates/*
-    - infrastructure/deploy-infra/*
+    - azure-k8-service/infrastructure/tf-templates/*
+    - azure-k8-service/infrastructure/deploy_infra/*
 pr:
   branches:
     include:
     - master
   paths:
     include:
-    - infrastructure/tf-templates/*
-    - infrastructure/deploy-infra/*
+    - azure-k8-service/infrastructure/tf-templates/*
+    - azure-k8-service/infrastructure/deploy_infra/*
 
 pool:
   vmImage: 'ubuntu-latest'
