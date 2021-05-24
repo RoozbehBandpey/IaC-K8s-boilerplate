@@ -1,0 +1,82 @@
+# Template pipeline for the ML Environment Deployment
+# This includes shared infrastructure and n ML workspaces, compute and
+# their configuration.
+# 
+# When the workspaces parameter is not provided, only shared infra
+# to be deployed.
+#
+# :param environment: the environment for deployment e.g. dev
+
+parameters:
+  workspaces: []
+
+jobs:
+  - job:
+  - deployment: ResourceGroupDeployment
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    environment: ${{ parameters.environment }}
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ado-template-resourcegroup.yml
+
+  # - job:
+  # - deployment: ValidateSharedInfra
+  #   dependsOn: ResourceGroupDeployment
+  #   variables:
+  #   - name: deploymentMode
+  #     value: 'Validation'
+  #   pool:
+  #     vmImage: '${{ parameters.vmImage }}'
+  #   environment: ${{ parameters.environment }}
+  #   strategy:
+  #     runOnce:
+  #       deploy:
+  #         steps:
+  #         - template: ado-template-mlenv-sharedinfra.yml
+
+  # - deployment: DeploySharedInfra
+  #   dependsOn: ValidateSharedInfra
+  #   variables:
+  #   - name: deploymentMode
+  #     value: 'Incremental'
+  #   pool:
+  #     vmImage: '${{ parameters.vmImage }}'
+  #   environment: ${{ parameters.environment }}
+  #   strategy:
+  #     runOnce:
+  #       deploy:
+  #         steps:
+  #         - template: ado-template-mlenv-sharedinfra.yml
+
+  # - job:
+  # - deployment: ValidateMLInfra
+  #   dependsOn: DeploySharedInfra
+  #   variables:
+  #   - name: deploymentMode
+  #     value: 'Validation'
+  #   pool:
+  #     vmImage: '${{ parameters.vmImage }}'
+  #   environment: ${{ parameters.environment }}
+  #   strategy:
+  #     runOnce:
+  #       deploy:
+  #         steps:
+  #         - template: ado-template-mlenv-workspace.yml
+
+  # - job:
+  # - deployment: DeployMLInfra
+  #   dependsOn: ValidateMLInfra
+  #   variables:
+  #   - name: deploymentMode
+  #     value: 'Incremental'
+  #   pool:
+  #     vmImage: '${{ parameters.vmImage }}'
+  #   environment: ${{ parameters.environment }}
+  #   strategy:
+  #     runOnce:
+  #       deploy:
+  #         steps:
+  #         - template: ado-template-mlenv-workspace.yml
