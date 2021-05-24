@@ -38,7 +38,6 @@ jobs:
 #     scriptLocation: 'inlineScript'
 #     inlineScript: |
 #                   az storage account create -n $(STORAGE_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
-ß
 # - task: AzureCLI@1
 #   displayName: 'Deployment: tfstate container'
 #   inputs:
