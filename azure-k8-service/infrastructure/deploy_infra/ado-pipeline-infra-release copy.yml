@@ -1,0 +1,67 @@
+# Machine Learning Infrastructure Release
+#
+# This pipeline's scope is to validate and deploy infrastructural
+# changes to the training environments for machine learning. This includes:
+#
+# * a stage to publish ARM templates and tests
+# * a stage to deploy and validate the functional working of the
+#   deployed infrastructure in an integration environment
+#
+# This pipeline is automatically triggered on any change in the arm-templates
+# folder containing this ADO pipeline definition and infra-as-code.
+
+trigger:
+  branches:
+    include:
+    - master
+
+  paths:
+    include:
+    - infrastructure/arm-templates/*
+    - infrastructure/deploy-infra/*
+
+
+# loading all variables groups once, to resolve Azure DevOps problems with resolving variables
+variables:
+- group: mlops-vg-dev
+
+
+stages:
+# Validate and publish dependencies for downstream stages
+- stage: Build
+  displayName: 'IaC Build'
+  jobs:
+  - job: Build
+    pool:
+        # does not make sense to use self-hosted agents here
+        vmImage: 'ubuntu-latest'
+    steps:   
+    - task: CopyFiles@2
+      displayName: 'Copy Deployment scripts'
+      inputs:
+        sourceFolder: 'infrastructure/deployment-scripts'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates'
+      inputs:
+        sourceFolder: 'infrastructure/arm-templates'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: IaCAndTests
+
+# Deploy Dev 
+- stage: DeployDevInfra
+  displayName: 'Deploy: DEV'
+  dependsOn: build
+  variables:
+  - group: mlops-vg-dev
+  - name: armArtifactName
+    value: IaCAndTests
+  - name: RESOURCE_GROUP_NAME
+    value: $(BASE_NAME)-rg-$(ENV)
+
+  jobs:
+  - template: ado-template-mlenv.yml
+    parameters:
+      environment: RESOURCE_GROUP_NAME
+      vmImage: 'ubuntu-latest'
