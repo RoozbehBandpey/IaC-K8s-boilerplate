@@ -6,7 +6,7 @@
 # :param environment: the environment for deployment e.g. dev
 
 jobs:
-  - job:
+  - job: SharedInfraDeployment
   - deployment: KubernetesEnvironmentDeployment
     pool:
       vmImage: '${{ parameters.vmImage }}'
@@ -100,5 +100,28 @@ jobs:
 
 
           
-          - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-            displayName: 'Install Terraform 0.15.0'
+  - job: Validate
+    continueOnError: false
+    steps:
+    - publish: ./tf-templates
+      artifact: terraform_out
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+      displayName: 'Use Terraform v0.12.6'
+      inputs:
+        terraformVersion: 0.12.6
+    # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    #   displayName: 'terraform init'
+    #   inputs:
+    #     command: init
+    #     workingDirectory: ./tf-templates
+    #     backendType: azurerm
+    #     backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
+    #     backendAzureRmResourceGroupName: 'AKSTerraform-RG'
+    #     backendAzureRmStorageAccountName: 'nyuenterraformstate'
+    #     backendAzureRmContainerName: 'tfstate'
+    #     backendAzureRmKey: 'demo.terraform.tfstate'
+    # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+    #   displayName: 'terraform validate'
+    #   inputs:
+    #     command: validate
+    #     workingDirectory: ./tf-templates
