@@ -97,3 +97,8 @@ jobs:
               scriptLocation: 'inlineScript'
               inlineScript: |
                             az keyvault secret set --vault-name $(KEYVAULT_NAME) --name SPNID --value $(SP_APP_ID) >/dev/null
+
+
+          
+          - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+            displayName: 'Install Terraform 0.15.0'
