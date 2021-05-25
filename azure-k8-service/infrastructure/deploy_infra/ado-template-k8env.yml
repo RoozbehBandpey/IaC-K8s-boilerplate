@@ -19,6 +19,8 @@ jobs:
         value: $(BASE_NAME)storage$(ENV)
       - name: KEYVAULT_NAME
         value: $(BASE_NAME)-kv-$(ENV)
+      - name: SORAGE_CONTAINER_NAME
+        value: tfstate
     strategy:
       runOnce:
         deploy:
@@ -41,12 +43,12 @@ jobs:
                             az storage account create -n $(STORAGE_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
 
           - task: AzureCLI@1
-            displayName: 'Deployment: tfstate container'
+            displayName: 'Deployment: terraform state container'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            az storage container create -n tfstate --account-name $(STORAGE_NAME)
+                            az storage container create -n $(SORAGE_CONTAINER_NAME) --account-name $(STORAGE_NAME)
 
           - task: AzureCLI@1
             displayName: Check if KeyVault exists & deploy
@@ -72,7 +74,7 @@ jobs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            az storage container generate-sas --account-name $(STORAGE_NAME) --expiry 2022-01-01 --name tfstate --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
+                            az storage container generate-sas --account-name $(STORAGE_NAME) --expiry 2022-01-01 --name $(SORAGE_CONTAINER_NAME) --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
 
           - task: AzureCLI@1
             displayName: 'Deployment: creating an ssh key'
@@ -103,7 +105,7 @@ jobs:
   - job: Validate
     continueOnError: false
     steps:
-    - publish: ./tf-templates
+    - publish: ./azure-k8-service/infrastructure/tf-templates
       artifact: terraform_out
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
       displayName: 'Use Terraform v0.15.0'
@@ -113,15 +115,15 @@ jobs:
     #   displayName: 'terraform init'
     #   inputs:
     #     command: init
-    #     workingDirectory: ./tf-templates
+    #     workingDirectory: ./azure-k8-service/infrastructure/tf-templates
     #     backendType: azurerm
     #     backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
     #     backendAzureRmResourceGroupName: 'AKSTerraform-RG'
-    #     backendAzureRmStorageAccountName: 'nyuenterraformstate'
-    #     backendAzureRmContainerName: 'tfstate'
+    #     backendAzureRmStorageAccountName: $(STORAGE_NAME)
+    #     backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
     #     backendAzureRmKey: 'demo.terraform.tfstate'
     # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     #   displayName: 'terraform validate'
     #   inputs:
     #     command: validate
-    #     workingDirectory: ./tf-templates
+    #     workingDirectory: ./azure-k8-service/infrastructure/tf-templates
