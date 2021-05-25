@@ -107,7 +107,7 @@ jobs:
     steps:
     - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
-      
+
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
       displayName: 'Use Terraform v0.15.0'
       inputs:
@@ -129,6 +129,7 @@ jobs:
         backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
         ensureBackend: true
         backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmResourceGroupEnvironment: $(ENV)
         backendAzureRmResourceGroupName: $(RESOURCE_GROUP)
         backendAzureRmStorageAccountName: $(STORAGE_NAME)
         backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)

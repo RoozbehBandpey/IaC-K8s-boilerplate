@@ -1,8 +1,9 @@
 provider "azurerm" {
- version = "~>2.3.0"
+ version = "=2.60.0"
  features {}
 }
 
+variable ENV {}
 variable BASE_NAME {}
 variable RESOURCE_GROUP {}
 # variable WORKSPACE_NAME {}
@@ -47,10 +48,10 @@ variable RESOURCE_GROUP {}
 # }
 
 # Container registry for AML Service
-resource "azurerm_container_registry" "amlacr" {
-  name                     = "${var.BASE_NAME}amlcr"
-  resource_group_name      = data.azurerm_resource_group.amlrg.name
-  location                 = data.azurerm_resource_group.amlrg.location
+resource "azurerm_container_registry" "k8acr" {
+  name                     = "${var.BASE_NAME}acr${var.ENV}"
+  resource_group_name      = data.azurerm_resource_group.k8acr.name
+  location                 = data.azurerm_resource_group.k8acr.location
   sku                      = "Standard"
   admin_enabled            = true
 }
