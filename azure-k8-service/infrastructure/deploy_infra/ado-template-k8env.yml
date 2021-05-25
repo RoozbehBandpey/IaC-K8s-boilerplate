@@ -109,9 +109,9 @@ jobs:
       artifact: terraform_out
 
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
-      displayName: 'Use Terraform v0.15.0'
+      displayName: 'Use Terraform v0.14.0'
       inputs:
-        terraformVersion: 0.15.0
+        terraformVersion: 0.14.0
 
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
       displayName: 'terraform validate'
