@@ -107,23 +107,57 @@ jobs:
     steps:
     - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
+      
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
       displayName: 'Use Terraform v0.15.0'
       inputs:
         terraformVersion: 0.15.0
-    # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-    #   displayName: 'terraform init'
-    #   inputs:
-    #     command: init
-    #     workingDirectory: ./azure-k8-service/infrastructure/tf-templates
-    #     backendType: azurerm
-    #     backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
-    #     backendAzureRmResourceGroupName: 'AKSTerraform-RG'
-    #     backendAzureRmStorageAccountName: $(STORAGE_NAME)
-    #     backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
-    #     backendAzureRmKey: 'aksenv.terraform.tfstate'
-    # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-    #   displayName: 'terraform validate'
-    #   inputs:
-    #     command: validate
-    #     workingDirectory: ./azure-k8-service/infrastructure/tf-templates
+
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+      displayName: 'terraform validate'
+      inputs:
+        command: validate
+        workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+      displayName: 'TF init - Deploy AKS resources to Azure'
+      inputs:
+        command: init
+        commandOptions: '-backend=true -backend-config=$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates/backend.tf'
+        workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+        backendType: azurerm
+        backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
+        ensureBackend: true
+        backendAzureRmResourceGroupLocation: $(LOCATION)
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP)
+        backendAzureRmStorageAccountName: $(STORAGE_NAME)
+        backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
+        backendAzureRmKey: 'aksinfra.tfstate'
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'TF validate - Deploy MLOps resources to Azure'
+#   inputs:
+#     command: validate
+#     workingDirectory: '$(Build.SourcesDirectory)/environment_setup/tf-templates'
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'TF plan - Deploy MLOps resources to Azure'
+#   inputs:
+#     command: plan
+#     workingDirectory: '$(Build.SourcesDirectory)/environment_setup/tf-templates'
+#     environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
+#   env:
+#     TF_VAR_BASE_NAME: $(BASE_NAME)
+#     TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP)
+#     TF_VAR_WORKSPACE_NAME: $(WORKSPACE_NAME)
+
+# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
+#   displayName: 'TF apply - Deploy MLOps resources to Azure'
+#   inputs:
+#     command: apply
+#     workingDirectory: '$(Build.SourcesDirectory)/environment_setup/tf-templates'
+#     environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
+#   env:
+#     TF_VAR_BASE_NAME: $(BASE_NAME)
+#     TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP)
+#     TF_VAR_WORKSPACE_NAME: $(WORKSPACE_NAME)
