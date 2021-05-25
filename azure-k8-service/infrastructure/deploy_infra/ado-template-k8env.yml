@@ -105,7 +105,7 @@ jobs:
   - job: Validate
     continueOnError: false
     steps:
-    - publish: ./azure-k8-service/infrastructure/tf-templates
+    - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
     - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
       displayName: 'Use Terraform v0.15.0'
@@ -121,7 +121,7 @@ jobs:
     #     backendAzureRmResourceGroupName: 'AKSTerraform-RG'
     #     backendAzureRmStorageAccountName: $(STORAGE_NAME)
     #     backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
-    #     backendAzureRmKey: 'demo.terraform.tfstate'
+    #     backendAzureRmKey: 'aksenv.terraform.tfstate'
     # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
     #   displayName: 'terraform validate'
     #   inputs:
