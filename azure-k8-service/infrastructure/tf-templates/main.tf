@@ -1,8 +1,3 @@
-provider "azure" {
- version = "~>2.20.0"
- features {}
-}
-
 variable ENV {}
 variable BASE_NAME {}
 variable RESOURCE_GROUP {}
