@@ -1,4 +1,6 @@
 terraform {
+  backend "azurerm" {
+  }
   required_providers {
     azurerm = {
       # The "hashicorp" namespace is the new home for the HashiCorp-maintained
