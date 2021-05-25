@@ -88,7 +88,7 @@ jobs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            az keyvault secret set --vault-name $(KEYVAULT_NAME) --name LinuxSSHPubKey -f ~/.ssh/id_rsa_terraform.pub > /dev/null
+                            az keyvault secret set --vault-name $(KEYVAULT_NAME) --name LinuxSSHPubKey -f ~/.ssh/id_rsa_terraform.pub >/dev/null
 
           - task: AzureCLI@1
             displayName: 'Deployment: store the service principal id in Azure KeyVault'
@@ -96,4 +96,4 @@ jobs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            az keyvault secret set --vault-name $(KEYVAULT_NAME) --name spn-id --value $(SP_APP_ID) /dev/null
+                            az keyvault secret set --vault-name $(KEYVAULT_NAME) --name SPNID --value $(SP_APP_ID) >/dev/null
