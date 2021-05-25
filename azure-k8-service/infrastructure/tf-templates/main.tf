@@ -7,7 +7,10 @@ variable ENV {}
 variable BASE_NAME {}
 variable RESOURCE_GROUP {}
 # variable WORKSPACE_NAME {}
-
+data "azurerm_resource_group" "k8rg" {
+  name = var.RESOURCE_GROUP
+  env = ar.ENV
+}
 #--------------------------------------------------------------------------------
 
 #Set the already-existing resource group
@@ -50,8 +53,8 @@ variable RESOURCE_GROUP {}
 # Container registry for AML Service
 resource "azurerm_container_registry" "k8acr" {
   name                     = "${var.BASE_NAME}acr${var.ENV}"
-  resource_group_name      = data.azurerm_resource_group.k8acr.name
-  location                 = data.azurerm_resource_group.k8acr.location
+  resource_group_name      = data.azurerm_resource_group.k8rg.name
+  location                 = data.azurerm_resource_group.k8rg.location
   sku                      = "Standard"
   admin_enabled            = true
 }
