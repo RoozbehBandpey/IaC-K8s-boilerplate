@@ -8,7 +8,6 @@ terraform {
       # backward compatibility for commonly-used providers, but recommended for
       # explicitness.
       source  = "registry.terraform.io/hashicorp/azurerm"
-      version = "~> 2.12"
     }
   }
 }
