@@ -32,7 +32,7 @@ jobs:
                             az group create -n $(RESOURCE_GROUP_NAME) \
                             -l $(LOCATION)
 
-          - task: AzureCLI@1
+          - task: AzureCLI@2
             displayName: 'Deployment: Storage'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
@@ -40,7 +40,7 @@ jobs:
               inlineScript: |
                             az storage account create -n $(STORAGE_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
 
-          - task: AzureCLI@1
+          - task: AzureCLI@3
             displayName: 'Deployment: tfstate container'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
@@ -48,7 +48,7 @@ jobs:
               inlineScript: |
                             az storage container create -n tfstate --account-name $(STORAGE_NAME)
 
-          - task: AzureCLI@1
+          - task: AzureCLI@4
             displayName: Check if KeyVault exists & deploy
             condition: ne(variables['deploymentMode'], 'Validation')
             inputs:
@@ -66,7 +66,7 @@ jobs:
           #     inlineScript: |
           #                   az keyvault create -n $(KEYVAULT_NAME) -g $(RESOURCE_GROUP_NAME) -l $(LOCATION)
 
-          - task: AzureCLI@1
+          - task: AzureCLI@5
             displayName: 'Deployment: Creating a SAS Token for the storage account'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
@@ -74,15 +74,15 @@ jobs:
               inlineScript: |
                             az storage container generate-sas --account-name $(STORAGE_NAME) --expiry 2022-01-01 --name tfstate --permissions dlrw -o json | xargs az keyvault secret set --vault-name $(KEYVAULT_NAME) --name TerraformSASToken --value
 
-          - task: AzureCLI@1
+          - task: AzureCLI@6
             displayName: 'Deployment: creating an ssh key'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
               scriptLocation: 'inlineScript'
               inlineScript: |
-                            ssh-keygen  -f ~/.ssh/id_rsa_terraform
+                            ssh-keygen  -f ~/.ssh/id_rsa_terraform -q -P ""
 
-          - task: AzureCLI@1
+          - task: AzureCLI@7
             displayName: 'Deployment: store the public key in Azure KeyVault'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
@@ -90,7 +90,7 @@ jobs:
               inlineScript: |
                             az keyvault secret set --vault-name $(KEYVAULT_NAME) --name LinuxSSHPubKey -f ~/.ssh/id_rsa_terraform.pub > /dev/null
 
-          - task: AzureCLI@1
+          - task: AzureCLI@8
             displayName: 'Deployment: store the service principal id in Azure KeyVault'
             inputs:
               azureSubscription: $(AZURE_RM_SVC_CONNECTION)
