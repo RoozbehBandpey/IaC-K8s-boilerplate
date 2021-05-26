@@ -108,7 +108,7 @@ jobs:
     - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
 
-    - task: TerraformInstaller@0
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
       displayName: 'Use Terraform v0.14.8'
       inputs:
         terraformVersion: 0.14.8
