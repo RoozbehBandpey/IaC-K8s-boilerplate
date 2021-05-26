@@ -15,7 +15,7 @@ steps:
       azureSubscription: $(AZURE_RM_SVC_CONNECTION)
       scriptLocation: inlineScript
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-      inlineScript: 'sh check.sh'
+      inlineScript: 'sudo sh check.sh'
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
