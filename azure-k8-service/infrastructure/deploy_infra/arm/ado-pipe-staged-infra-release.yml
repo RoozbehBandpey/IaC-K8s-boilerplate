@@ -38,8 +38,8 @@ pool:
 # loading all variables groups once, to resolve Azure DevOps problems with resolving variables
 variables:
 - group: k8-vg-dev
-- group: k8-vg-int
-- group: k8-vg-prd
+# - group: k8-vg-int
+# - group: k8-vg-prd
 
 stages:
 # Validate and publish dependencies for downstream stages
