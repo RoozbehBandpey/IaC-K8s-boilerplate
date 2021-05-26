@@ -16,15 +16,20 @@ steps:
   #     scriptLocation: inlineScript
   #     workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
   #     inlineScript: 'sudo sh check.sh'
+  # - script: |
+  #           Add other tasks to build, test, and deploy your project.
+  #           echo See https://aka.ms/yaml
+  #   displayName: 'Run a multi-line script'
   - task: AzureCLI@2
     displayName: Check if KeyVault
     inputs:
       azureSubscription: 'kubernetes-infra-release'
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: 'sh check.sh'
-      # arguments: 'a b'
-      # workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+      arguments: 'a b'
+      workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+      inlineScript: |
+                    sh check.sh
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
