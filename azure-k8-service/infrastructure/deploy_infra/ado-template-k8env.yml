@@ -139,7 +139,7 @@ jobs:
         ensureBackend: true
         backendAzureRmResourceGroupLocation: $(LOCATION)
         backendAzureRmResourceGroupEnvironment: $(ENV)
-        backendAzureRmResourceGroupName: $(RESOURCE_GROUP)
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP_NAME)
         backendAzureRmStorageAccountName: $(STORAGE_NAME)
         backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'aksinfra.tfstate'
