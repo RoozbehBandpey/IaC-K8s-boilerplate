@@ -17,7 +17,7 @@ trigger:
   paths:
     include:
     - azure-k8-service/infrastructure/tf-templates/*
-    - azure-k8-service/infrastructure/deploy_infra/*
+    - azure-k8-service/infrastructure/deploy_infra/terraform/*
 pr:
   branches:
     include:
@@ -25,7 +25,7 @@ pr:
   paths:
     include:
     - azure-k8-service/infrastructure/tf-templates/*
-    - azure-k8-service/infrastructure/deploy_infra/*
+    - azure-k8-service/infrastructure/deploy_infra/terraform/*
 
 pool:
   vmImage: 'ubuntu-latest'
