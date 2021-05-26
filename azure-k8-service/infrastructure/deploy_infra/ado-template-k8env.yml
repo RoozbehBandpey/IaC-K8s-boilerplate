@@ -108,18 +108,18 @@ jobs:
     - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
 
-    - task: TerraformInstaller
-      displayName: 'Use Terraform v latest'
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-installer.TerraformInstaller@0
+      displayName: 'Use Terraform latest'
       inputs:
         terraformVersion: latest
 
-    - task: TerraformCLI@0
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
       displayName: 'terraform validate'
       inputs:
         command: validate
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
 
-    - task: TerraformCLI@0
+    - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
       displayName: 'TF init - Deploy AKS resources to Azure'
       inputs:
         command: init
