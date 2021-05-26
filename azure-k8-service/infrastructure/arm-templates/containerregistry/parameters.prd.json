@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "aksbpacrprd"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "apiversion": {
+            "value": "2017-10-01"
+        },
+        "registrySkuName": {
+            "value": "Premium"
+        },
+        "registrySkuTier": {
+            "value": "Premium"
+        },
+        "vnetResourceGroupName": {
+            "value": "atiit4ad-network-prd"
+        },
+        "vnetName": {
+            "value": "atiit4ad-network-vnet-prd"
+        },
+        "subnetObject": {
+            "value": {
+                "subnets": [
+                    {
+                        "name": "aksbp-aml-sn-prd"
+                    },
+                    {
+                        "name": "atiit4ad-devops-sn-prd"
+                    }
+                ]
+            }
+        },
+        "adminUserEnabled": {
+            "value": true
+        }
+    }
+}

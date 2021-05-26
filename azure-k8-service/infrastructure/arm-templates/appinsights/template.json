@@ -1,0 +1,45 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "regionId": {
+            "type": "string"
+        },
+        "keyvaultName": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Insights/components",
+            "location": "[parameters('regionId')]",
+            "name": "[parameters('name')]",
+            "apiVersion": "2015-05-01",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web"
+            }
+        },
+        {
+          "name": "[concat(parameters('keyVaultName'), '/instrumentationkey', parameters('name'))]",
+          "type": "Microsoft.KeyVault/vaults/secrets",
+          "apiVersion": "2018-02-14",
+          "location": "westeurope",
+          "dependsOn": [
+            "[parameters('name')]"
+          ],
+          "properties": {
+            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), '2014-04-01').InstrumentationKey]"
+          }
+        }
+    ],
+    "outputs": {
+        "resourceId": {
+          "value": "[resourceId('microsoft.insights/components', parameters('name'))]",
+          "type": "string"
+        }
+    }
+}

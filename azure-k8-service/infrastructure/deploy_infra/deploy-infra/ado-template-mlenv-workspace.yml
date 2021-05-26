@@ -1,0 +1,192 @@
+# Template pipeline for the ML Workspace Deployment
+# 
+# This pipeline deploys and configures ML services, ML compute,
+# configures datastores as part of the workspace, and finally tests
+# the correctness of the deployment by running a set of post-deployment
+# tests.
+
+steps:
+# [temp] clean up of pipeline wd as not done by ADO
+- script: |
+    if [ -d $(Pipeline.Workspace)/$(armArtifactName) ]; then
+      rm -r $(Pipeline.Workspace)/$(armArtifactName)/*
+    fi
+  displayName: Clean up pipeline workspace
+- download: current
+  artifact: $(armArtifactName)
+
+- script: |
+    echo $(serviceConnection)
+  displayName: print service connection name
+
+# Deploy ML Services & Compute
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Workspace'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlworkspace/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlworkspace/parameters.$(environment).json'
+    overrideParameters: |
+      -name "$(workspaceName)-$(environment)" 
+      -containerRegistryName "$(containerRegistryInstance)$(environment)"
+    deploymentMode: $(deploymentMode) 
+
+# event grid subscription
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Event Grid Subscription'
+  continueOnError: true # continue even if the deployment of this step fails
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/eventgridsubscriptions/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/eventgridsubscriptions/parameters.$(environment).json'
+    overrideParameters: |
+      -amlWorkspaceName "$(workspaceName)-$(environment)" 
+    deploymentMode: $(deploymentMode) 
+
+# default gpu compute
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `gpupoolv100`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 100
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `gpupool2v100`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "gpupool2v100" 
+      -vmSize "STANDARD_NC12S_V3" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 50
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `gpupool4v100`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "gpupool4v100" 
+      -vmSize "STANDARD_NC24S_V3" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 25
+    deploymentMode: $(deploymentMode) 
+
+# default cpu compute
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `cpupool8core`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool8core" 
+      -vmSize "STANDARD_DS4_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 25
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `cpupool1core`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool1core" 
+      -vmSize "STANDARD_DS1_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 200
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `cpupool2core`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool2core" 
+      -vmSize "STANDARD_DS2_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 100
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute `cpupool4core`'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool4core" 
+      -vmSize "STANDARD_D3_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 50
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute cpupool8core400'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool8core400" 
+      -vmSize "STANDARD_D4_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 50
+    deploymentMode: $(deploymentMode) 
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: ML Compute cpupool72core'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/mlcompute/parameters.$(environment).json'
+    overrideParameters: |
+      -workspaceName "$(workspaceName)-$(environment)" 
+      -clusterName "cpupool72core" 
+      -vmSize "STANDARD_F72S_V2" 
+      -adminUserSSHKey "$(amlPublicKey)" 
+      -maxNodeCount 25
+    deploymentMode: $(deploymentMode) 

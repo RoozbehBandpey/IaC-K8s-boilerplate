@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+		"purpose": {
+			"type": "string"
+		},
+		"env": {
+			"type": "string"
+		},
+		"type": {
+			"type": "string"
+		},
+        "location": {
+            "type": "string"
+        },
+        "apiversion": {
+            "type": "string"
+        },
+        "registrySkuName": {
+            "type": "string"
+        },
+        "registrySkuTier": {
+            "type": "string"
+        },
+        "adminUserEnabled": {
+            "type": "bool"
+        }
+    },
+	"variables": {
+		"name": "[concat(parameters('purpose'), parameters('type'), parameters('env'))]"
+	},
+    "resources": [
+        {
+            "type": "Microsoft.ContainerRegistry/registries",
+            "sku": {
+                "name": "[parameters('registrySkuName')]",
+                "tier": "[parameters('registrySkuTier')]"
+            },
+            "name": "[variables('name')]",
+            "apiVersion": "[parameters('apiVersion')]",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "adminUserEnabled": "[parameters('adminUserEnabled')]",
+				"policies": {
+					"quarantinePolicy": {
+						"status": "disabled"
+					},
+					"trustPolicy": {
+						"type": "Notary",
+						"status": "disabled"
+					},
+					"retentionPolicy": {
+						"days": 7,
+						"status": "disabled"
+					}
+				},
+				"encryption": {
+					"status": "disabled"
+				},
+				"dataEndpointEnabled": false
+            }
+        }
+    ],
+    "outputs": {
+        "resourceId": {
+          "value": "[resourceId('Microsoft.ContainerRegistry/registries', parameters('name'))]",
+          "type": "string"
+        }
+    }
+}

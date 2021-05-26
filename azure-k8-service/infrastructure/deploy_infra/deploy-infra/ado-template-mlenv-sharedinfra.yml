@@ -1,0 +1,200 @@
+# Template pipeline for the deployment of shared infrastructure
+# that the ML workspaces depend on.
+#
+# This pipeline deploys a KeyVault instance, Two Storage accounts (one
+# for the ML workspace logs, one as a shared data store), two Container
+# Registries (one staging, one ML workspace-related) and an Application
+# Insights instance. Storage accounts are preconfigured with a set of blob
+# containers (initialization, metrics, datasets, ..)
+steps:
+
+- download: current
+  artifact: $(armArtifactName)
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download ATIIT4AD Shared Templates Artifact'
+  inputs:
+    buildType: 'specific'
+    project: '$(System.TeamProjectId)'
+    definition: '$(sharedTemplatesPipelineDefinitionId)'
+    buildVersionToDownload: 'latest'
+    artifactName: '$(sharedTemplatesArtifactName)'
+    targetPath: '$(Pipeline.Workspace)/$(sharedTemplatesArtifactName)'
+
+- task: AzureCLI@1
+  displayName: Check if KeyVault exists
+  condition: ne(variables['deploymentMode'], 'Validation')
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptLocation: inlineScript
+    workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+    inlineScript: 'sh check-keyvault.sh $(environment) $(resource_group_name)'
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Key Vault'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/parameters.$(environment).json'
+    addSpnToEnvironment: true
+    overrideParameters: -name "aksbp-kv-$(environment)" -objectId $servicePrincipalId -createMode $(createmode)
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Application Insights'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/appinsights/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/appinsights/parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Storage - Logging'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/parameters.$(environment).json'
+    overrideParameters: -name "aksbpamlstorage$(environment)" -accountType "Standard_LRS" -enableRetention true
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Storage - Datasets'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/parameters.$(environment).json'
+    overrideParameters: -name "aksbpdata$(environment)"
+    deploymentMode: $(deploymentMode)
+
+# legacy blob container datasets for transition phase until training lake db is up and running
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: blob containers'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/container_template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/storage/container.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Container Registry ML'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/containerregistry/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/containerregistry/parameters.$(environment).json'
+    overrideParameters: -name "aksbpacr$(environment)"
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Container Registry Staging'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/containerregistry/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/containerregistry/parameters.$(environment).json'
+    overrideParameters: -name "aksbpacrstaging$(environment)"
+    deploymentMode: $(deploymentMode)
+
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: SQL Server'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/sqlserver.template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/sqlserver.parameters.$(environment).json'
+    overrideParameters: -administratorLoginPassword "$(sqlServerAdminPass)"
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: SQL Server Private Endpoint'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/privateendpoint/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/privateendpoint/parameters.sql.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: SQL DB metrics DB'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/metricsdb.template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/metricsdb.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: SQL DB metadata DB'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/metadatadb.template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/sql/metadatadb.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: External Event Hub Namespace'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(sharedTemplatesArtifactName)/src/arm/eventhub/eventhubnamespace.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/eventhub/eventhubnamespace.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Event Hub to External Event Hub Namespace'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(sharedTemplatesArtifactName)/src/arm/eventhub/eventhub.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/eventhub/eventhub.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Azure Function App Service Plan'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(sharedTemplatesArtifactName)/src/arm/function/functionplan.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/functions/functionplan.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Azure Function App'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(resource_group_name)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/functions/functionapp.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/functions/functionapp.parameters.$(environment).json'
+    deploymentMode: $(deploymentMode)
+
+- task: ARM Outputs@5
+  condition: eq(variables['deploymentMode'], 'Incremental')
+  inputs:
+    ConnectedServiceNameSelector: 'ConnectedServiceNameARM'
+    ConnectedServiceNameARM: $(serviceConnection)
+    resourceGroupName: '$(resource_group_name)'
+    whenLastDeploymentIsFailed: 'fail'
+

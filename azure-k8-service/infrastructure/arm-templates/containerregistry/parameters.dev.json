@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+       "purpose": {
+			"value": "ctsemseg"
+		},
+		"env": {
+			"value": "dev"
+		},
+		"type": {
+			"value": "acr"
+		},
+        "location": {
+            "value": "westeurope"
+        },
+        "apiversion": {
+            "value": "2017-10-01"
+        },
+        "registrySkuName": {
+            "value": "Basic"
+        },
+        "registrySkuTier": {
+            "value": "Basic"
+        },
+        "adminUserEnabled": {
+            "value": true
+        }
+    }
+}

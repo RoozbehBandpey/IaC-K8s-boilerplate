@@ -1,0 +1,98 @@
+# Template pipeline for the ML Environment Deployment
+# This includes shared infrastructure and n ML workspaces, compute and
+# their configuration.
+# 
+# When the workspaces parameter is not provided, only shared infra
+# to be deployed.
+#
+# :param workspaces: an array of workspace names to be deployed e.g. lidar
+# :param environment: the environment for deployment e.g. dev
+
+parameters:
+  workspaces: []
+
+jobs:
+- deployment: ValidateSharedInfra
+  variables:
+  - name: deploymentMode
+    value: 'Validation'
+  pool:
+    name: '${{ parameters.agentpool }}'
+  environment: ${{ parameters.environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - template: ado-template-mlenv-sharedinfra.yml
+
+# ML Workspaces 
+# Loops through workspaces parameter (array)
+- ${{ each workspace in parameters.workspaces }}:
+  - deployment: ValidateWs${{ workspace }}
+    # dependsOn: ValidateSharedInfra
+    pool:
+      name: '${{ parameters.agentpool }}'
+    environment: ${{ parameters.environment }}
+    variables:
+    - name: workspaceName
+      value:  aksbp-${{ workspace }}-aml #-{env}
+    - name: deploymentMode
+      value: 'Validation'
+    - ${{ if ne(workspace, 'unittests') }}:
+      - name: containerRegistryInstance
+        value: aksbpacr
+    - ${{ if eq(workspace, 'unittests') }}:
+      - name: containerRegistryInstance
+        value: aksbpacrstaging
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ado-template-mlenv-workspace.yml
+
+
+- deployment: DeploySharedInfra
+  dependsOn: ValidateSharedInfra
+  variables:
+  - name: deploymentMode
+    value: 'Incremental'
+  pool:
+    name: '${{ parameters.agentpool }}'
+  environment: ${{ parameters.environment }}
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - template: ado-template-mlenv-sharedinfra.yml
+
+# ML Workspaces 
+# Loops through workspaces parameter (array)
+- ${{ each workspace in parameters.workspaces }}:
+  - deployment: DeployWs${{ workspace }}
+    dependsOn: 
+    - DeploySharedInfra
+    - ValidateWs${{ workspace }}
+    pool:
+      name: '${{ parameters.agentpool }}'
+    environment: ${{ parameters.environment }}
+    variables:
+    - name: workspaceName
+      value:  aksbp-${{ workspace }}-aml #-{env}
+    - name: deploymentMode
+      value: 'Incremental'
+    - ${{ if ne(workspace, 'unittests') }}:
+      - name: containerRegistryInstance
+        value: aksbpacr
+    - ${{ if eq(workspace, 'unittests') }}:
+      - name: containerRegistryInstance
+        value: aksbpacrstaging
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: ado-template-mlenv-workspace.yml
+          - template: ado-template-mlenv-datastores.yml
+          - template: ado-template-mlenv-tests.yml
+            parameters: 
+              report_name: 'workspace_tests'
+              spc: $(serviceConnection)
