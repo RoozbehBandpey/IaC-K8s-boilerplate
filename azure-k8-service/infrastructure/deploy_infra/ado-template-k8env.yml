@@ -104,6 +104,16 @@ jobs:
           
   - job: Validate
     continueOnError: false
+    variables:
+      - group: k8-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(ENV)
+      - name: STORAGE_NAME
+        value: $(BASE_NAME)storage$(ENV)
+      - name: KEYVAULT_NAME
+        value: $(BASE_NAME)-kv-$(ENV)
+      - name: SORAGE_CONTAINER_NAME
+        value: tfstate
     steps:
     - publish: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
       artifact: terraform_out
