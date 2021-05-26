@@ -1,0 +1,29 @@
+# Template pipeline for the deployment of shared infrastructure
+# that the ML workspaces depend on.
+#
+# This pipeline deploys a KeyVault instance, Two Storage accounts (one
+# for the ML workspace logs, one as a shared data store), two Container
+# Registries (one staging, one ML workspace-related) and an Application
+# Insights instance. Storage accounts are preconfigured with a set of blob
+# containers (initialization, metrics, datasets, ..)
+steps:
+
+- task: AzureCLI@1
+  displayName: Check if KeyVault exists
+  condition: ne(variables['deploymentMode'], 'Validation')
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptLocation: inlineScript
+    workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+    inlineScript: 'sh check-keyvault.sh $(BASE_NAME) $(ENV)'
+
+- task: AzureResourceGroupDeployment@2
+  displayName: 'Deployment: Container Registry ML'
+  inputs:
+    azureSubscription: $(serviceConnection)
+    resourceGroupName: $(BASE_NAME)-rg-$(ENV)
+    location: $(location)
+    csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/template.json'
+    csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/parameters.$(ENV).json'
+    deploymentMode: $(deploymentMode)
+

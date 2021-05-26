@@ -1,10 +1,9 @@
 # get Command Line Args
 baseName=$1
-location=$2
-resourceGroupName=$3
+environment=$2
 
 # Check if KeyVault exists
-az keyvault show -n "$baseName" -g $resourceGroupName
+az keyvault show -n "$baseName-kv-$environment" -g "$baseName-rg-$environment"
 # Use recover mode keep ML ws's access policies
 if [ $? -eq 0 ]; then
     echo "keyvault recovery deployment"
@@ -12,5 +11,4 @@ if [ $? -eq 0 ]; then
 else
     echo "keyvault default deployment"
     echo "##vso[task.setvariable variable=createmode]default"
-    az keyvault create -n "$baseName" -g "$resourceGroupName" -l "$location"
 fi
