@@ -159,6 +159,7 @@ jobs:
         environmentServiceNameAzureRM: '$(AZURE_RM_SVC_CONNECTION)'
       env:
         TF_VAR_BASE_NAME: $(BASE_NAME)
+        TF_VAR_ENV: $(ENV)
         TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP_NAME)
 
 # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
