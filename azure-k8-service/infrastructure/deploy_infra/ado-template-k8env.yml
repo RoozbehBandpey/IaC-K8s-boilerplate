@@ -138,10 +138,10 @@ jobs:
         backendServiceArm: '$(AZURE_RM_SVC_CONNECTION)'
         ensureBackend: true
         backendAzureRmResourceGroupLocation: $(LOCATION)
-        backendAzureRmResourceGroupEnvironment: '$(ENV)'
-        backendAzureRmResourceGroupName: '$(RESOURCE_GROUP)'
-        backendAzureRmStorageAccountName: '$(STORAGE_NAME)'
-        backendAzureRmContainerName: '$(SORAGE_CONTAINER_NAME)'
+        backendAzureRmResourceGroupEnvironment: $(ENV)
+        backendAzureRmResourceGroupName: $(RESOURCE_GROUP)
+        backendAzureRmStorageAccountName: $(STORAGE_NAME)
+        backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
         backendAzureRmKey: 'aksinfra.tfstate'
 
     # - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
