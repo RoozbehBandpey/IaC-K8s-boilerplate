@@ -125,6 +125,16 @@ jobs:
 
     - script: echo *********************************** $(AZURE_RM_SVC_CONNECTION)
       displayName: 'Run a one-line script'
+    - script: echo *********************************** $(RESOURCE_GROUP_NAME)
+      displayName: 'Run a one-line script'
+    - script: echo *********************************** $(STORAGE_NAME)
+      displayName: 'Run a one-line script'
+    - script: echo *********************************** $(KEYVAULT_NAME)
+      displayName: 'Run a one-line script'
+    - script: echo *********************************** $(LOCATION)
+      displayName: 'Run a one-line script'
+    - script: echo *********************************** $(ENV)
+      displayName: 'Run a one-line script'
 
       # variables:
       #   backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
