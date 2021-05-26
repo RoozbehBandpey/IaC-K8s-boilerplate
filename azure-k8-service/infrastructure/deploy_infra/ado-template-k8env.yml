@@ -102,7 +102,7 @@ jobs:
 
 
           
-  - job: Terraform Deployment
+  - job: TerraformDeployment
     continueOnError: false
     variables:
       - group: k8-vg-dev
