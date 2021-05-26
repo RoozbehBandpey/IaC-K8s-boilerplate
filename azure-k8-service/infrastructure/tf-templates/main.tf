@@ -1,3 +1,7 @@
+provider "azurerm" {
+  features {}
+}
+
 variable ENV {}
 variable BASE_NAME {}
 variable RESOURCE_GROUP {}
