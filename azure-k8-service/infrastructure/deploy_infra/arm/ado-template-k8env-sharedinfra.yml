@@ -20,16 +20,24 @@ steps:
   #           Add other tasks to build, test, and deploy your project.
   #           echo See https://aka.ms/yaml
   #   displayName: 'Run a multi-line script'
+  # - task: AzureCLI@2
+  #   displayName: Check if KeyVault
+  #   inputs:
+  #     azureSubscription: 'kubernetes-infra-release'
+  #     scriptType: 'bash'
+  #     scriptLocation: 'inlineScript'
+  #     arguments: 'a b'
+  #     workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+  #     inlineScript: |
+  #                   sh check.sh
+
   - task: AzureCLI@2
-    displayName: Check if KeyVault
     inputs:
       azureSubscription: 'kubernetes-infra-release'
       scriptType: 'bash'
-      scriptLocation: 'inlineScript'
+      scriptLocation: 'scriptPath'
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/scripts/check-keyvault.sh
       arguments: 'a b'
-      workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-      inlineScript: |
-                    sh check.sh
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
