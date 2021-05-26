@@ -163,13 +163,13 @@ jobs:
         TF_VAR_ENV: $(ENV)
         TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP_NAME)
 
-# - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
-#   displayName: 'TF apply - Deploy MLOps resources to Azure'
-#   inputs:
-#     command: apply
-#     workingDirectory: '$(Build.SourcesDirectory)/environment_setup/tf-templates'
-#     environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
-#   env:
-#     TF_VAR_BASE_NAME: $(BASE_NAME)
-#     TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP)
-#     TF_VAR_WORKSPACE_NAME: $(WORKSPACE_NAME)
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+      displayName: 'TF apply - Deploy AKS resources to Azure'
+      inputs:
+        command: apply
+        workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+        environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
+      env:
+        TF_VAR_BASE_NAME: $(BASE_NAME)
+        TF_VAR_ENV: $(ENV)
+        TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP_NAME)
