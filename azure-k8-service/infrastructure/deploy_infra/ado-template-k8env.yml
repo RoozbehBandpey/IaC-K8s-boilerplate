@@ -102,7 +102,7 @@ jobs:
 
 
           
-  - job: Validate
+  - job: Terraform Deployment
     continueOnError: false
     variables:
       - group: k8-vg-dev
@@ -168,7 +168,7 @@ jobs:
       inputs:
         command: apply
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
-        environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
+        environmentServiceNameAzureRM: $(AZURE_RM_SVC_CONNECTION)
       env:
         TF_VAR_BASE_NAME: $(BASE_NAME)
         TF_VAR_ENV: $(ENV)
