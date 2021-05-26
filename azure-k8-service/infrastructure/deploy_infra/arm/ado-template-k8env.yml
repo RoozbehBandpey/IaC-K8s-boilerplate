@@ -28,10 +28,7 @@ jobs:
                             az group create -n $(RESOURCE_GROUP_NAME) \
                             -l $(LOCATION)
   - job: SharedInfraDeployment
-    strategy:
-    runOnce:
-      deploy:
-        steps:
-        - template: ado-template-k8env-sharedinfra.yml
-          parameters: 
-              serviceconnection: $(AZURE_RM_SVC_CONNECTION)
+    steps:
+    - template: ado-template-k8env-sharedinfra.yml
+      parameters: 
+        serviceconnection: $(AZURE_RM_SVC_CONNECTION)
