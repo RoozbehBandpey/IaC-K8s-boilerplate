@@ -15,7 +15,7 @@ steps:
     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
     scriptType: sh
     scriptLocation: inlineScript
-    workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+    scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/scripts/check.sh
     inlineScript: 'sh check.sh $(BASE_NAME) $(ENV)'
 
 # - task: AzureResourceGroupDeployment@2
