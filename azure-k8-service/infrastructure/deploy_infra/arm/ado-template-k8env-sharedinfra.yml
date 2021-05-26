@@ -8,7 +8,7 @@
 # containers (initialization, metrics, datasets, ..)
 steps:
 
-- task: AzureCLI@1
+- task: AzureCLI@2
   displayName: Check if KeyVault exists
   condition: ne(variables['deploymentMode'], 'Validation')
   inputs:
