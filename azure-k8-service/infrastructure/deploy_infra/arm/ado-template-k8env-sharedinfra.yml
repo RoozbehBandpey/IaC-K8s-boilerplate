@@ -7,18 +7,17 @@
 # Insights instance. Storage accounts are preconfigured with a set of blob
 # containers (initialization, metrics, datasets, ..)
 
-strategy:
-  runOnce:
-    deploy:
-      steps:
-        - task: AzureCLI@1
-          displayName: Check if KeyVault exists & deploy
-          condition: ne(variables['deploymentMode'], 'Validation')
-          inputs:
-            azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-            scriptLocation: inlineScript
-            workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-            inlineScript: 'sh check.sh'
+
+deploy:
+  steps:
+    - task: AzureCLI@1
+      displayName: Check if KeyVault exists & deploy
+      condition: ne(variables['deploymentMode'], 'Validation')
+      inputs:
+        azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+        scriptLocation: inlineScript
+        workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+        inlineScript: 'sh check.sh'
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
