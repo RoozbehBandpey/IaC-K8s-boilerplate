@@ -155,7 +155,7 @@ jobs:
       displayName: 'TF plan - Deploy AKS resources to Azure'
       inputs:
         command: plan
-        commandOptions: '-lock=false'
+        commandOptions: 'force-unlock -lock=false'
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
         environmentServiceNameAzureRM: '$(AZURE_RM_SVC_CONNECTION)'
       env:
