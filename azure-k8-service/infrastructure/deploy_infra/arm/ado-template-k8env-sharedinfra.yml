@@ -33,11 +33,11 @@ steps:
 
   - task: AzureCLI@2
     inputs:
-      azureSubscription: 'kubernetes-infra-release'
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
       scriptPath: azure-k8-service/infrastructure/deployment-scripts/check-keyvault.sh
-      arguments: 'a b'
+      arguments: '$(BASE_NAME) $(ENV)'
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
