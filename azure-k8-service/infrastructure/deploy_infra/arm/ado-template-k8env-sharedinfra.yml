@@ -12,7 +12,7 @@ steps:
   displayName: Check if KeyVault exists
   condition: ne(variables['deploymentMode'], 'Validation')
   inputs:
-    azureSubscription: $(serviceConnection)
+    azureSubscription: $(AZURE_RM_SVC_CONNECTION)
     scriptLocation: inlineScript
     workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
     inlineScript: 'sh check-keyvault.sh $(BASE_NAME) $(ENV)'
@@ -20,7 +20,7 @@ steps:
 - task: AzureResourceGroupDeployment@2
   displayName: 'Deployment: Container Registry ML'
   inputs:
-    azureSubscription: $(serviceConnection)
+    azureSubscription: $(AZURE_RM_SVC_CONNECTION)
     resourceGroupName: $(BASE_NAME)-rg-$(ENV)
     location: $(location)
     csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/template.json'
