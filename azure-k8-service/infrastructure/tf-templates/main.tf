@@ -4,7 +4,7 @@ variable RESOURCE_GROUP {}
 # variable WORKSPACE_NAME {}
 data "azurerm_resource_group" "k8rg" {
   name = var.RESOURCE_GROUP
-  env = ar.ENV
+  env = var.ENV
 }
 #--------------------------------------------------------------------------------
 
