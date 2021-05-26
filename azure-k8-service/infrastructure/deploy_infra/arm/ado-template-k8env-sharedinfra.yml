@@ -24,7 +24,7 @@ steps:
       scriptLocation: 'inlineScript'
       inlineScript: 'sh check.sh'
       # arguments: 'a b'
-      workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+      # workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
