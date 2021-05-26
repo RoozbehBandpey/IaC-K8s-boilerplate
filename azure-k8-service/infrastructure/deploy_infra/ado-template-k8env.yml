@@ -109,17 +109,17 @@ jobs:
       artifact: terraform_out
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-      displayName: 'Use Terraform v0.14.8'
+      displayName: 'Use Terraform latest'
       inputs:
-        terraformVersion: 0.14.8
+        terraformVersion: latest
 
-    - task: TerraformTaskV2@2
-      displayName: 'terraform validate'
-      inputs:
-        command: validate
-        workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+    # - task: TerraformTaskV2@2
+    #   displayName: 'terraform validate'
+    #   inputs:
+    #     command: validate
+    #     workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
 
-    - task: TerraformCLI@0
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: 'TF init - Deploy AKS resources to Azure'
       inputs:
         command: init
