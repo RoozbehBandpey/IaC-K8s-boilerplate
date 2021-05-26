@@ -123,11 +123,11 @@ jobs:
       inputs:
         terraformVersion: 0.15.0
 
-    # - task: TerraformTaskV2@2
-    #   displayName: 'terraform validate'
-    #   inputs:
-    #     command: validate
-    #     workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+      # variables:
+      #   backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
+      #   terraformstoragerg: $(AZURE_RM_SVC_CONNECTION)
+      #   terraformstorageaccount: 'terraformstorage8ff03276'
+
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
       displayName: 'TF init - Deploy AKS resources to Azure'
@@ -135,13 +135,13 @@ jobs:
         command: init
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
         backendType: azurerm
-        backendServiceArm: $(AZURE_RM_SVC_CONNECTION)
+        backendServiceArm: '$(AZURE_RM_SVC_CONNECTION)'
         ensureBackend: true
-        backendAzureRmResourceGroupLocation: $(LOCATION)
-        backendAzureRmResourceGroupEnvironment: $(ENV)
-        backendAzureRmResourceGroupName: $(RESOURCE_GROUP)
-        backendAzureRmStorageAccountName: $(STORAGE_NAME)
-        backendAzureRmContainerName: $(SORAGE_CONTAINER_NAME)
+        backendAzureRmResourceGroupLocation: '$(LOCATION)'
+        backendAzureRmResourceGroupEnvironment: '$(ENV)'
+        backendAzureRmResourceGroupName: '$(RESOURCE_GROUP)'
+        backendAzureRmStorageAccountName: '$(STORAGE_NAME)'
+        backendAzureRmContainerName: '$(SORAGE_CONTAINER_NAME)'
         backendAzureRmKey: 'aksinfra.tfstate'
 
 # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
