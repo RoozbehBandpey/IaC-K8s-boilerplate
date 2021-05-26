@@ -8,15 +8,23 @@
 # containers (initialization, metrics, datasets, ..)
 steps:
 
-- task: AzureCLI@2
-  displayName: Check if KeyVault exists
-  condition: ne(variables['deploymentMode'], 'Validation')
-  inputs:
-    azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-    scriptType: sh
-    scriptLocation: inlineScript
-    scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/scripts/check.sh
-    inlineScript: 'sh check.sh $(BASE_NAME) $(ENV)'
+# - task: AzureCLI@2
+#   displayName: Check if KeyVault exists
+#   condition: ne(variables['deploymentMode'], 'Validation')
+#   inputs:
+#     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+#     scriptType: sh
+#     scriptLocation: inlineScript
+#     scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/scripts/check.sh
+#     inlineScript: 'sh check.sh $(BASE_NAME) $(ENV)'
+  - task: AzureCLI@1
+    displayName: Check if KeyVault exists & deploy
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptLocation: inlineScript
+      workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+      inlineScript: 'sh check-keyvault.sh k8bp dev'
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'

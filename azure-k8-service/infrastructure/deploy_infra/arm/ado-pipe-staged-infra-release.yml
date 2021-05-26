@@ -47,9 +47,6 @@ stages:
   displayName: 'IaC Build'
   jobs:
   - job: Build
-    pool:
-        # does not make sense to use self-hosted agents here
-        vmImage: 'ubuntu-latest'
     steps:
     - task: CopyFiles@2
       displayName: 'Copy Deployment scripts'
