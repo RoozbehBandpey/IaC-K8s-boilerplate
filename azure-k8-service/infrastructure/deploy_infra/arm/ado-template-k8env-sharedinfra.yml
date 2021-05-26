@@ -13,6 +13,7 @@ steps:
   condition: ne(variables['deploymentMode'], 'Validation')
   inputs:
     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+    scriptType: sh
     scriptLocation: inlineScript
     workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
     inlineScript: 'sh check.sh $(BASE_NAME) $(ENV)'
