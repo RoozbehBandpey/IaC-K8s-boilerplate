@@ -157,6 +157,21 @@ jobs:
     #     backendAzureRmContainerName: '$(SORAGE_CONTAINER_NAME)'
     #     backendAzureRmKey: 'aksinfra.tfstate'
 
+    - task: ms-devlabs.custom-terraform-tasks.custom-terraform-release-task.TerraformTaskV1@0
+      displayName: 'TF init - Deploy AKS resources to Azure'
+      inputs:
+        command: init
+        workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
+        backendType: azurerm
+        backendServiceArm: 'kubernetes-infra-release'
+        ensureBackend: true
+        backendAzureRmResourceGroupLocation: 'westeurope'
+        backendAzureRmResourceGroupEnvironment: 'dev'
+        backendAzureRmResourceGroupName: 'k8bp-rg-dev'
+        backendAzureRmStorageAccountName: 'k8bpstoragedev'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'aksinfra.tfstate'
+
 # - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
 #   displayName: 'TF validate - Deploy MLOps resources to Azure'
 #   inputs:
