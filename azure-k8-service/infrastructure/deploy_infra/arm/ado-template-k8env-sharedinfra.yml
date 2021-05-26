@@ -6,34 +6,19 @@
 # Registries (one staging, one ML workspace-related) and an Application
 # Insights instance. Storage accounts are preconfigured with a set of blob
 # containers (initialization, metrics, datasets, ..)
-jobs:
-  - job: SharedInfraDeployment
-  - deployment: KubernetesEnvironmentDeployment
-    pool:
-      vmImage: '${{ parameters.vmImage }}'
-    environment: '${{ parameters.environment }}'
-    variables:
-      - group: k8-vg-dev
-      - name: RESOURCE_GROUP_NAME
-        value: $(BASE_NAME)-rg-$(ENV)
-      - name: STORAGE_NAME
-        value: $(BASE_NAME)storage$(ENV)
-      - name: KEYVAULT_NAME
-        value: $(BASE_NAME)-kv-$(ENV)
-      - name: SORAGE_CONTAINER_NAME
-        value: tfstate
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-            - task: AzureCLI@1
-              displayName: Check if KeyVault exists & deploy
-              condition: ne(variables['deploymentMode'], 'Validation')
-              inputs:
-                azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-                scriptLocation: inlineScript
-                workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-                inlineScript: 'sh check.sh'
+
+strategy:
+  runOnce:
+    deploy:
+      steps:
+        - task: AzureCLI@1
+          displayName: Check if KeyVault exists & deploy
+          condition: ne(variables['deploymentMode'], 'Validation')
+          inputs:
+            azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+            scriptLocation: inlineScript
+            workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+            inlineScript: 'sh check.sh'
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
