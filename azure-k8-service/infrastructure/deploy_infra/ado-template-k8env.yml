@@ -133,6 +133,7 @@ jobs:
       displayName: 'TF init - Deploy AKS resources to Azure'
       inputs:
         command: init
+        commandOptions: '-backend=true -lock=false -backend-config=$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates/backend.tf'
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
         backendType: azurerm
         backendServiceArm: '$(AZURE_RM_SVC_CONNECTION)'
