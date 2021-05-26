@@ -109,9 +109,9 @@ jobs:
       artifact: terraform_out
 
     - task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
-      displayName: 'Use Terraform latest'
+      displayName: 'Use Terraform v0.15.0'
       inputs:
-        terraformVersion: latest
+        terraformVersion: 0.15.0
 
     # - task: TerraformTaskV2@2
     #   displayName: 'terraform validate'
