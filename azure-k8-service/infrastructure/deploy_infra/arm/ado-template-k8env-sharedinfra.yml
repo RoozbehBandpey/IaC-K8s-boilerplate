@@ -36,7 +36,7 @@ steps:
       azureSubscription: 'kubernetes-infra-release'
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/scripts/check-keyvault.sh
+      scriptPath: $(Build.ArtifactStagingDirectory)/scripts/check-keyvault.sh
       arguments: 'a b'
 
 # - task: AzureResourceGroupDeployment@2
