@@ -156,7 +156,7 @@ jobs:
       inputs:
         command: plan
         workingDirectory: '$(Build.SourcesDirectory)/azure-k8-service/infrastructure/tf-templates'
-        environmentServiceName: '$(AZURE_RM_SVC_CONNECTION)'
+        environmentServiceNameAzureRM: '$(AZURE_RM_SVC_CONNECTION)'
       env:
         TF_VAR_BASE_NAME: $(BASE_NAME)
         TF_VAR_RESOURCE_GROUP: $(RESOURCE_GROUP_NAME)
