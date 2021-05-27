@@ -20,23 +20,23 @@ steps:
       useGlobalConfig: true
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
   
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: 'kubernetes-infra-release'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: 'ls $(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/'
-
-  # - task: AzureResourceManagerTemplateDeployment@3
+  # - task: AzureCLI@2
   #   inputs:
-  #     deploymentScope: 'Resource Group'
-  #     azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
-  #     action: 'Create Or Update Resource Group'
-  #     resourceGroupName: $(RESOURCE_GROUP_NAME)
-  #     location: $(LOCATION)
-  #     templateLocation: 'Linked artifact'
-  #     csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/template.json'
-  #     csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/parameters.$(ENV).json'
-  #     deploymentMode: $(deploymentMode)
-  #     overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
-  #     deploymentName: 'KeyvaultDeployment'
+  #     azureSubscription: 'kubernetes-infra-release'
+  #     scriptType: 'bash'
+  #     scriptLocation: 'inlineScript'
+  #     inlineScript: 'ls $(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
+      deploymentName: 'KeyvaultDeployment'
