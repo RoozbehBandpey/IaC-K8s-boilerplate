@@ -25,10 +25,7 @@ steps:
       azureSubscription: 'kubernetes-infra-release'
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: |
-                    ls 'azure-k8-service/infrastructure/arm-templates/keyvault/
-                    ls '$(Pipeline.Workspace)/arm-templates'
-                    ls $(Pipeline.Workspace)/$(armArtifactName)/scripts
+      inlineScript: 'ls azure-k8-service/infrastructure/arm-templates/keyvault/'
 
   # - task: AzureResourceManagerTemplateDeployment@3
   #   inputs:
