@@ -23,7 +23,7 @@ steps:
   - task: AzureCLI@2
     inputs:
       azureSubscription: 'kubernetes-infra-release'
-      scriptType: 'batch'
+      scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: 'echo ********************  $(deploymentMode)'
 
