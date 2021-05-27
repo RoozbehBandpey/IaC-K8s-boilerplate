@@ -52,13 +52,13 @@ stages:
       displayName: 'Copy Deployment scripts'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/deployment-scripts'
-        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+        targetFolder: '$(Pipeline.Workspace)/scripts'
     - task: CopyFiles@2
       displayName: 'Copy ARM templates'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/arm-templates'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-    - publish: '$(Build.ArtifactStagingDirectory)'
+        targetFolder: '$(Pipeline.Workspace)/arm-templates'
+    - publish: '$(Pipeline.Workspace)'
       artifact: IaCAndTests
 
 # Deploy Dev 

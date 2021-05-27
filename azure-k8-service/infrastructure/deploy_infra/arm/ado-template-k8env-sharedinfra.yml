@@ -62,4 +62,4 @@ steps:
       csmParametersFile: 'azure-k8-service/infrastructure/arm-templates/keyvault/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
       overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
-      deploymentName: 'Keyvault Deployment'
+      deploymentName: 'KeyvaultDeployment'

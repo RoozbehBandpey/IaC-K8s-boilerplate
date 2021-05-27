@@ -23,7 +23,7 @@
                 "accessPolicies": [
                     {
                         "tenantId": "7b88386b-c610-47bc-ba98-c3e2421c231f",
-                        "objectId": "4992c56b-986c-4a34-88b7-77604da36221",
+                        "objectId": "4992c56b-986c-4a34-88b7-77604da36221", me
                         "permissions": {
                             "keys": [
                                 "Get",
