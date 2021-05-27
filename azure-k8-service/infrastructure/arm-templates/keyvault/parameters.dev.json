@@ -28,6 +28,12 @@
                     }
                 ]
             }
+        },
+        "sku": {
+            "value": {
+                "family": "A",
+                "name": "standard"
+            }
         }
     }
 }

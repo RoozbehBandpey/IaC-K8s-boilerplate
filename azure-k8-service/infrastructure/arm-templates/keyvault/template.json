@@ -16,6 +16,9 @@
         },
         "subnetObject": {
             "type": "object"
+        },
+        "sku": {
+            "type": "object"
         }
     },
     "variables": {
@@ -31,8 +34,8 @@
             "scale": null,
             "properties": {
                 "sku": {
-                    "family": "A",
-                    "name": "standard"
+                    "family": "[parameters('sku').family]",
+                    "name": "[parameters('sku').name]"
                 },
                 "tenantId": "[subscription().tenantId]",
                 "createMode": "[parameters('createMode')]",
