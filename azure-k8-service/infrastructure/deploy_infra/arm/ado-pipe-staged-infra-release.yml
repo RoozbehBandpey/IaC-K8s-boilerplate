@@ -45,6 +45,9 @@ stages:
 # Validate and publish dependencies for downstream stages
 - stage: Build
   displayName: 'IaC Build'
+  variables:
+  - name: armArtifactName
+    value: IaCAndTests
   jobs:
   - job: Build
     steps:
@@ -52,14 +55,14 @@ stages:
       displayName: 'Copy Deployment scripts'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/deployment-scripts'
-        targetFolder: '$(Pipeline.Workspace)/scripts'
+        targetFolder: '$(Pipeline.Workspace)/$(armArtifactName)/scripts'
     - task: CopyFiles@2
       displayName: 'Copy ARM templates'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/arm-templates'
-        targetFolder: '$(Pipeline.Workspace)/arm-templates'
+        targetFolder: '$(Pipeline.Workspace)/$(armArtifactName)/arm-templates'
     - publish: '$(Pipeline.Workspace)'
-      artifact: IaCAndTests
+      artifact: $(armArtifactName)
 
 # Deploy Dev 
 - stage: DeployDevInfra
