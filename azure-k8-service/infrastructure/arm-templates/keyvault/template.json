@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
@@ -24,7 +24,7 @@
         {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[parameters('name')]",
-            "apiVersion": "2018-02-14",
+            "apiVersion": "2020-04-01-preview",
             "location": "[parameters('location')]",
             "tags": {
             },
@@ -37,24 +37,15 @@
                 "tenantId": "[subscription().tenantId]",
                 "createMode": "[parameters('createMode')]",
                 "enabledForTemplateDeployment": true,
-                "networkAcls": {
-                    "bypass": "AzureServices",
-                    "defaultAction": "Deny",
-                    "copy": [
-                        {
-                            "name": "virtualNetworkRules",
-                            "count": "[length(parameters('subnetObject').subnets)]",
-                            "input": {
-                                "id": "[concat(resourceId(parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].vnetResourceGroup, 'Microsoft.Network/virtualNetworks', parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].vnetName), '/subnets/', parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].name)]",
-                                "action": "Allow"
-                            }
-                        }
-                    ]
-                },
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "softDeleteRetentionInDays": 90,
+                "vaultUri": "[concat('https://', parameters('name'), '.vault.azure.net/')]",
+                "provisioningState": "Succeeded",
                 "accessPolicies": [
                     {
                         "tenantId": "[subscription().tenantId]",
-                        "objectId": "0b0f361a-5972-4d60-8b20-b41b2fb2783a",
+                        "objectId": "[parameters('objectId')]",
                         "permissions": {
                             "keys": [
                                 "Get",

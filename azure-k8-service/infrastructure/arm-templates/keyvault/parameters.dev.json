@@ -9,15 +9,14 @@
             "value": "westeurope"
         },
         "objectId": {
-            "value": "spcid"
+            "value": "50dcba4a-f861-4495-a6f1-29f36b13aa30"
         },
         "createMode": {
             "value": "default"
         },
         "subnetObject": {
             "value": {
-                "subnets": [
-                    {
+                "subnets": [{
                         "vnetResourceGroup": "k8bpit-network-dev",
                         "vnetName": "k8bpit-network-vnet-dev",
                         "name": "k8bpit-devops-sn-dev"
