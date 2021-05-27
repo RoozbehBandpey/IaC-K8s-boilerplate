@@ -19,36 +19,6 @@ steps:
       arguments: '$(BASE_NAME) $(ENV)'
       useGlobalConfig: true
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
-  
-  # - task: AzureCLI@2
-  #   inputs:
-  #     azureSubscription: 'kubernetes-infra-release'
-  #     scriptType: 'bash'
-  #     scriptLocation: 'inlineScript'
-  #     inlineScript: 'echo ********************  $(deploymentMode)'
-
-
-# - task: AzureResourceGroupDeployment@2
-#   displayName: 'Deployment: Container Registry'
-#   inputs:
-#     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-#     resourceGroupName: $(BASE_NAME)-rg-$(ENV)
-#     location: $(location)
-#     csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/template.json'
-#     csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/parameters.$(ENV).json'
-#     deploymentMode: $(deploymentMode)
-
-# - task: AzureResourceGroupDeployment@2
-#   displayName: 'Deployment: Key Vault'
-#   inputs:
-#     azureSubscription: $(serviceConnection)
-#     resourceGroupName: $(resource_group_name)
-#     location: $(location)
-#     csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/template.json'
-#     csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/parameters.$(environment).json'
-#     addSpnToEnvironment: true
-#     overrideParameters: -name "aksbp-kv-$(environment)" -objectId $servicePrincipalId -createMode $(createmode)
-#     deploymentMode: $(deploymentMode)
 
   - task: AzureResourceManagerTemplateDeployment@3
     inputs:
@@ -61,5 +31,5 @@ steps:
       csmFile: 'azure-k8-service/infrastructure/arm-templates/keyvault/template.json'
       csmParametersFile: 'azure-k8-service/infrastructure/arm-templates/keyvault/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
-      overrideParameters: -name "$(BASE_NAME)-kvtest-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
+      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
       deploymentName: 'KeyvaultDeployment'
