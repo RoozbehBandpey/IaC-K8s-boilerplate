@@ -9,7 +9,7 @@
             "value": "westeurope"
         },
         "objectId": {
-            "value": "50dcba4a-f861-4495-a6f1-29f36b13aa30"
+            "value": "service_principal_object_id"
         },
         "createMode": {
             "value": "default"
