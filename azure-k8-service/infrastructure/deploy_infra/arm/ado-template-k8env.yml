@@ -47,4 +47,4 @@ jobs:
       runOnce:
         deploy:
           steps:
-          - template: ado-template-mlenv-sharedinfra.yml
+          - template: ado-template-k8env-sharedinfra.yml
