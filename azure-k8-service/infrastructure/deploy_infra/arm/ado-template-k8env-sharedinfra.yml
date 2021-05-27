@@ -9,6 +9,8 @@
 
 steps:
   - task: AzureCLI@2
+    displayName: Check if KeyVault exists
+    condition: ne(variables['deploymentMode'], 'Validation')
     inputs:
       azureSubscription: $(AZURE_RM_SVC_CONNECTION)
       scriptType: 'bash'
@@ -17,6 +19,14 @@ steps:
       arguments: '$(BASE_NAME) $(ENV)'
       useGlobalConfig: true
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
+  
+  - task: Bash@3
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Write your commands here
+        
+        echo ********************  $(deploymentMode)
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
@@ -28,3 +38,16 @@ steps:
 #     csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/container-registry/parameters.$(ENV).json'
 #     deploymentMode: $(deploymentMode)
 
+  # - task: AzureResourceManagerTemplateDeployment@3
+  #   inputs:
+  #     deploymentScope: 'Resource Group'
+  #     azureResourceManagerConnection: 'kubernetes-infra-release'
+  #     subscriptionId: '9121c725-4066-453a-874b-4fb3bc29e4a2'
+  #     action: 'Create Or Update Resource Group'
+  #     resourceGroupName: 'k8bp-rg-dev'
+  #     location: 'West Europe'
+  #     templateLocation: 'Linked artifact'
+  #     csmFile: 'some/path/to/template'
+  #     csmParametersFile: 'some/path/to/templateParams'
+  #     deploymentMode: 'Incremental'
+  #     deploymentName: 'Keyvault Deployment'
