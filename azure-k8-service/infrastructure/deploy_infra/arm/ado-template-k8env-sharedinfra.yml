@@ -20,13 +20,13 @@ steps:
       useGlobalConfig: true
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
   
-  - task: Bash@3
+  - task: AzureCLI@2
     inputs:
-      targetType: 'inline'
-      script: |
-        # Write your commands here
-        
-        echo ********************  $(deploymentMode)
+      azureSubscription: 'kubernetes-infra-release'
+      scriptType: 'batch'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'echo ********************  $(deploymentMode)'
+
 
 # - task: AzureResourceGroupDeployment@2
 #   displayName: 'Deployment: Container Registry'
