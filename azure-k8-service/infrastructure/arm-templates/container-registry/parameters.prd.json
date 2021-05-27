@@ -18,10 +18,10 @@
             "value": "Premium"
         },
         "vnetResourceGroupName": {
-            "value": "atiit4ad-network-prd"
+            "value": "k8bpit-network-prd"
         },
         "vnetName": {
-            "value": "atiit4ad-network-vnet-prd"
+            "value": "k8bpit-network-vnet-prd"
         },
         "subnetObject": {
             "value": {
@@ -30,7 +30,7 @@
                         "name": "aksbp-aml-sn-prd"
                     },
                     {
-                        "name": "atiit4ad-devops-sn-prd"
+                        "name": "k8bpit-devops-sn-prd"
                     }
                 ]
             }

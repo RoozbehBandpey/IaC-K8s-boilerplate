@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "k8bp-kv-test"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "objectId": {
+            "value": "spcid"
+        },
+        "createMode": {
+            "value": "default"
+        },
+        "subnetObject": {
+            "value": {
+                "subnets": [
+                    {
+                        "name": "k8bp-aml-sn"
+                    },
+                    {
+                        "name": "k8bpit-devops-sn"
+                    }
+                ]
+            }
+        }
+    }
+}

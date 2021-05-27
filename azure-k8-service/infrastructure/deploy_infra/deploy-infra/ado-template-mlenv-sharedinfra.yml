@@ -12,7 +12,7 @@ steps:
   artifact: $(armArtifactName)
 
 - task: DownloadPipelineArtifact@2
-  displayName: 'Download ATIIT4AD Shared Templates Artifact'
+  displayName: 'Download k8bpit Shared Templates Artifact'
   inputs:
     buildType: 'specific'
     project: '$(System.TeamProjectId)'

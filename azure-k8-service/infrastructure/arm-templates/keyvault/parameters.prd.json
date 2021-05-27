@@ -1,0 +1,34 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "k8bp-kv-prd"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "objectId": {
+            "value": "spcid"
+        },
+        "createMode": {
+            "value": "default"
+        },
+        "subnetObject": {
+            "value": {
+                "subnets": [
+                    {
+                        "vnetResourceGroup": "k8bpit-network-prd",
+                        "vnetName": "k8bpit-network-vnet-prd",
+                        "name": "k8bpit-devops-sn-prd"
+                    },
+                    {
+                        "vnetResourceGroup": "k8bpit-network-prd",
+                        "vnetName": "k8bpit-network-vnet-prd",
+                        "name": "k8bp-aml-sn-prd"
+                    }
+                ]
+            }
+        }
+    }
+}

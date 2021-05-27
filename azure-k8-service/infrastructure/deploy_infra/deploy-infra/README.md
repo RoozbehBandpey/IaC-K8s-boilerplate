@@ -115,7 +115,4 @@ custom role has been defined for a model developer. This role allows operations
 on ML workspaces and limited operations on both storage accounts as well as
 container registries.
 
-The [role
-definition](https://dev.azure.com/daimler/Athena/_git/atiit4ad/?path=%2Froles-and-permissions%2Faksbp-model-developer%2Faksbp-model-developer-role.json&version=GBfeature%2Fcnndeveloper-optimization)
-is managed under the [IT4AD
-repository](https://dev.azure.com/daimler/Athena/_git/atiit4ad/).
+

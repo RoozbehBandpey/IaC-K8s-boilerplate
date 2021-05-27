@@ -1,0 +1,101 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "objectId": {
+            "type": "string"
+        },
+        "createMode": {
+            "type": "string"
+        },
+        "subnetObject": {
+            "type": "object"
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[parameters('name')]",
+            "apiVersion": "2018-02-14",
+            "location": "[parameters('location')]",
+            "tags": {
+            },
+            "scale": null,
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "[subscription().tenantId]",
+                "createMode": "[parameters('createMode')]",
+                "enabledForTemplateDeployment": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Deny",
+                    "copy": [
+                        {
+                            "name": "virtualNetworkRules",
+                            "count": "[length(parameters('subnetObject').subnets)]",
+                            "input": {
+                                "id": "[concat(resourceId(parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].vnetResourceGroup, 'Microsoft.Network/virtualNetworks', parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].vnetName), '/subnets/', parameters('subnetObject').subnets[copyIndex('virtualNetworkRules')].name)]",
+                                "action": "Allow"
+                            }
+                        }
+                    ]
+                },
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "0b0f361a-5972-4d60-8b20-b41b2fb2783a",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "Decrypt",
+                                "Encrypt",
+                                "UnwrapKey",
+                                "WrapKey",
+                                "Verify",
+                                "Sign"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                            ]
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+            ]
+        }
+    ],
+    "outputs": {
+        "resourceId": {
+            "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('name'))]",
+            "type": "string"
+        }
+    }
+}

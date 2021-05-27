@@ -1,0 +1,44 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "k8bp-kv-sandbox"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "objectId": {
+            "value": "spcid"
+        },
+        "createMode": {
+            "value": "default"
+        },
+        "subnetObject": {
+            "value": {
+                "subnets": [
+                    {
+                        "vnetResourceGroup": "k8bp-sandbox",
+                        "vnetName": "k8bp-vnet-sandbox",
+                        "name": "k8bp-aml-sn"
+                    },
+                    {
+                        "vnetResourceGroup": "k8bp-sandbox",
+                        "vnetName": "k8bp-vnet-sandbox",
+                        "name": "k8bp-devops-sn"
+                    },
+                    {
+                        "vnetResourceGroup": "k8bpit-network-dev",
+                        "vnetName": "k8bpit-network-vnet-dev",
+                        "name": "k8bpit-devops-sn"
+                    },
+                    {
+                        "vnetResourceGroup": "k8bpit-network-dev",
+                        "vnetName": "k8bpit-network-vnet-dev",
+                        "name": "k8bp-aml-sn"
+                    }
+                ]
+            }
+        }
+    }
+}

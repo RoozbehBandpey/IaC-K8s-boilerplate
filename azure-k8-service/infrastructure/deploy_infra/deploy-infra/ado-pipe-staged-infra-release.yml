@@ -72,7 +72,7 @@ stages:
   - name: sharedTemplatesPipelineDefinitionId
     value: 4531
   - name: sharedTemplatesArtifactName
-    value: ATIIT4AD_SHARED_TEMPLATES
+    value: k8bpit_SHARED_TEMPLATES
   - name: resource_group_name
     value: aksbp-aml-dev
 
@@ -80,7 +80,7 @@ stages:
   - template: ado-template-mlenv.yml
     parameters:
       environment: 'aksbp-aml-dev'
-      agentpool: 'Athena-CPU-Deep-dev'
+      agentpool: 'project-CPU-Deep-dev'
       workspaces:
       - cv1
 
@@ -96,7 +96,7 @@ stages:
   - name: sharedTemplatesPipelineDefinitionId
     value: 4531
   - name: sharedTemplatesArtifactName
-    value: ATIIT4AD_SHARED_TEMPLATES
+    value: k8bpit_SHARED_TEMPLATES
   - name: resource_group_name
     value: aksbp-aml-int
 
@@ -104,7 +104,7 @@ stages:
   - template: ado-template-mlenv.yml
     parameters:
       environment: 'aksbp-aml-int'
-      agentpool: 'Athena-CPU-Deep-int'
+      agentpool: 'project-CPU-Deep-int'
       workspaces:
       - integration
       - tl
@@ -137,7 +137,7 @@ stages:
 #   jobs:
 #   - job: CNNRoleTest
 #     pool:
-#       name: 'Athena-CPU-Deep-int'
+#       name: 'project-CPU-Deep-int'
 #     steps:
 #     - download: current
 #       artifact: $(armArtifactName)
@@ -163,7 +163,7 @@ stages:
   - name: sharedTemplatesPipelineDefinitionId
     value: 4531
   - name: sharedTemplatesArtifactName
-    value: ATIIT4AD_SHARED_TEMPLATES
+    value: k8bpit_SHARED_TEMPLATES
   - name: resource_group_name
     value: aksbp-aml-prd
 
@@ -171,7 +171,7 @@ stages:
   - template: ado-template-mlenv.yml
     parameters:
       environment: 'aksbp-aml-prd'
-      agentpool: 'Athena-CPU-Deep-prd'
+      agentpool: 'project-CPU-Deep-prd'
       workspaces:
       - tl
       - ts
