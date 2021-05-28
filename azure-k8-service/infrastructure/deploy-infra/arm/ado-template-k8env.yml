@@ -6,15 +6,16 @@
 # :param environment: the environment for deployment e.g. dev
 
 jobs:
-  - job: SharedInfraValidation
   - deployment: ValidateSharedInfra
-    pool:
-      vmImage: '${{ parameters.vmImage }}'
-    environment: '${{ parameters.environment }}'
     variables:
       - group: k8-vg-dev
       - name: RESOURCE_GROUP_NAME
         value: $(BASE_NAME)-rg-$(ENV)
+      - name: deploymentMode
+        value: 'Validation'
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    environment: '${{ parameters.environment }}'
     strategy:
       runOnce:
         deploy:
@@ -27,8 +28,9 @@ jobs:
               inlineScript: |
                             az group create -n $(RESOURCE_GROUP_NAME) \
                             -l $(LOCATION)
-  - job: SharedInfraDeployment
-    steps:
-    - template: ado-template-k8env-sharedinfra.yml
-      parameters: 
-        serviceconnection: $(AZURE_RM_SVC_CONNECTION)
+          - template: ado-template-k8env-sharedinfra.yml
+  # - job: SharedInfraDeployment
+  #   steps:
+  #   - template: ado-template-k8env-sharedinfra.yml
+  #     parameters: 
+  #       serviceconnection: $(AZURE_RM_SVC_CONNECTION)
