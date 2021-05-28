@@ -9,6 +9,7 @@
 
 steps:
   - download: current
+    displayName: Download Artifacts
     artifact: $(armArtifactName)
 
   - task: AzureCLI@2
