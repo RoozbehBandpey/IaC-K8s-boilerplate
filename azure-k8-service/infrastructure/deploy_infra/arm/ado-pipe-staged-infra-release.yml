@@ -32,6 +32,9 @@ pr:
     - azure-k8-service/infrastructure/arm-templates/*
     - azure-k8-service/infrastructure/deploy_infra/arm/*
 
+pool:
+  vmImage: 'ubuntu-latest'
+
 # loading all variables groups once, to resolve Azure DevOps problems with resolving variables
 variables:
 - group: k8-vg-dev
@@ -42,26 +45,21 @@ stages:
 # Validate and publish dependencies for downstream stages
 - stage: Build
   displayName: 'IaC Build'
-  variables:
-  - name: armArtifactName
-    value: IaCAndTests
   jobs:
   - job: Build
-    pool:
-      vmImage: 'ubuntu-latest'
     steps:
     - task: CopyFiles@2
       displayName: 'Copy Deployment scripts'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/deployment-scripts'
-        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+        targetFolder: '$(Pipeline.Workspace)/scripts'
     - task: CopyFiles@2
       displayName: 'Copy ARM templates'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/arm-templates'
-        targetFolder: '$(Build.ArtifactStagingDirectory)'
-    - publish: '$(Build.ArtifactStagingDirectory)'
-      artifact: $(armArtifactName)
+        targetFolder: '$(Pipeline.Workspace)/arm-templates'
+    - publish: '$(Pipeline.Workspace)'
+      artifact: IaCAndTests
 
 # Deploy Dev 
 - stage: DeployDevInfra
@@ -75,104 +73,5 @@ stages:
   jobs:
   - template: ado-template-k8env.yml
     parameters:
-      agentpool: 'aks-cicd-vm'
-      environment: 'k8-env-dev'
-
-# # Deploy Integration Environment, Run Post-Deployment Tests
-# - stage: DeployIntInfra
-#   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
-#   displayName: 'Deploy: INT'
-#   variables:
-#   - group: aksbp-int
-#   - name: armArtifactName
-#     value: IaCAndTests
-#     # value: aksbp-infra-validated
-#   - name: sharedTemplatesPipelineDefinitionId
-#     value: 4531
-#   - name: sharedTemplatesArtifactName
-#     value: k8bpit_SHARED_TEMPLATES
-#   - name: resource_group_name
-#     value: aksbp-aml-int
-
-#   jobs:
-#   - template: ado-template-mlenv.yml
-#     parameters:
-#       environment: 'aksbp-aml-int'
-#       agentpool: 'project-CPU-Deep-int'
-#       workspaces:
-#       - integration
-#       - tl
-#       - ts
-#       - vru
-#       - unittests
-#       - lidar
-#       - cv2
-#       - cv1
-#       - monitoring
-#       - radar
-#       - blockage
-
-# Run Custom Role Tests
-# After having run these tests, we publish the infrastructure
-# templates as new artifacts 'aksbp-infra-validated'. These artifacts
-# are then used for the INT and PROD environment deployments.
-# Commented since we do not have the model developer role as service connection in ADO today
-# - stage: CustomRoleValidation
-#   displayName: 'Test Custom Roles'
-#   variables:
-#   - group: aksbp-int
-#   - name: armArtifactName
-#     value: IaCAndTests
-#   - name: workspaceName
-#     value: aksbp-integration-aml #-{env}
-#   - name: containerRegistryInstance
-#     value: aksbpacrint
-
-#   jobs:
-#   - job: CNNRoleTest
-#     pool:
-#       name: 'project-CPU-Deep-int'
-#     steps:
-#     - download: current
-#       artifact: $(armArtifactName)
-#     - template: ado-template-mlenv-tests.yml
-#       parameters:
-#         report_name: 'model_developer'
-#         spc: 'aksbp-poc-dev-model-developer-role'
-#     # Publish Validated Artifacts for Environment Deployments
-#     - publish: '$(Pipeline.Workspace)/$(armArtifactName)'
-#       artifact: aksbp-infra-validated
-#       condition: succeeded()
-#       displayName: 'Published Validated Artifacts (ARM + Tests)'
-
-# # Deploy Prd Environment, Run Post-Deployment Tests
-# - stage: DeployPrdInfra
-#   displayName: 'Deploy: PRD'
-#   condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
-#   variables:
-#   - group: aksbp-prd
-#   - name: armArtifactName
-#     value: IaCAndTests
-#     # value: aksbp-infra-validated
-#   - name: sharedTemplatesPipelineDefinitionId
-#     value: 4531
-#   - name: sharedTemplatesArtifactName
-#     value: k8bpit_SHARED_TEMPLATES
-#   - name: resource_group_name
-#     value: aksbp-aml-prd
-
-#   jobs:
-#   - template: ado-template-mlenv.yml
-#     parameters:
-#       environment: 'aksbp-aml-prd'
-#       agentpool: 'project-CPU-Deep-prd'
-#       workspaces:
-#       - tl
-#       - ts
-#       - vru
-#       - unittests
-#       - lidar
-#       - cv2
-#       - cv1
-#       - radar
-#       - blockage
+      vmImage: 'ubuntu-latest'
+      environment: 'dev'

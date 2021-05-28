@@ -6,46 +6,29 @@
 # :param environment: the environment for deployment e.g. dev
 
 jobs:
+  - job: SharedInfraValidation
   - deployment: ValidateSharedInfra
-    variables:
-    - group: k8-vg-dev
-    - name: RESOURCE_GROUP_NAME
-      value: $(BASE_NAME)-rg-$(ENV)
-    - name: deploymentMode
-      value: 'Validation'
     pool:
-      name: '${{ parameters.agentpool }}'
+      vmImage: '${{ parameters.vmImage }}'
     environment: '${{ parameters.environment }}'
+    variables:
+      - group: k8-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(ENV)
     strategy:
       runOnce:
         deploy:
           steps:
-          # - task: AzureCLI@1
-          #   displayName: 'Deployment: Resource Group'
-          #   inputs:
-          #     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-          #     scriptLocation: 'inlineScript'
-          #     inlineScript: |
-          #                   az group create -n $(RESOURCE_GROUP_NAME) \
-          #                   -l $(LOCATION)
-          # - task:
-            - template: ado-template-k8env-sharedinfra.yml
-
-
-
-  - deployment: DeploySharedInfra
-    dependsOn: ValidateSharedInfra
-    variables:
-    - group: k8-vg-dev
-    - name: RESOURCE_GROUP_NAME
-      value: $(BASE_NAME)-rg-$(ENV)
-    - name: deploymentMode
-      value: 'Incremental'
-    pool:
-      name: '${{ parameters.agentpool }}'
-    environment: '${{ parameters.environment }}'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - template: ado-template-k8env-sharedinfra.yml
+          - task: AzureCLI@1
+            displayName: 'Deployment: Resource Group'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az group create -n $(RESOURCE_GROUP_NAME) \
+                            -l $(LOCATION)
+  - job: SharedInfraDeployment
+    steps:
+    - template: ado-template-k8env-sharedinfra.yml
+      parameters: 
+        serviceconnection: $(AZURE_RM_SVC_CONNECTION)
