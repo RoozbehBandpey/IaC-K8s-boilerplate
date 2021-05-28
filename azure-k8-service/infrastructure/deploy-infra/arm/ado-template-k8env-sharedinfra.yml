@@ -11,15 +11,15 @@ steps:
   - download: current
     artifact: $(armArtifactName)
 
-  # - task: AzureCLI@2
-  #   displayName: Check if KeyVault exists
-  #   condition: ne(variables['deploymentMode'], 'Validation')
-  #   inputs:
-  #     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
-  #     scriptType: 'bash'
-  #     scriptLocation: 'scriptPath'
-  #     scriptPath: azure-k8-service/infrastructure/deployment-scripts/check-keyvault.sh
-  #     arguments: '$(BASE_NAME) $(ENV)'
+  - task: AzureCLI@2
+    displayName: Check if KeyVault exists
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: a$(Pipeline.Workspace)/$(armArtifactName)/a/scripts/check-keyvault.sh
+      arguments: '$(BASE_NAME) $(ENV)'
 
   - task: AzureCLI@1
     displayName: Check if KeyVault exists
@@ -70,8 +70,8 @@ steps:
       resourceGroupName: $(BASE_NAME)-rg-$(ENV)
       location: $(LOCATION)
       templateLocation: 'Linked artifact'
-      csmFile: 'azure-k8-service/infrastructure/arm-templates/keyvault/template.json'
-      csmParametersFile: 'azure-k8-service/infrastructure/arm-templates/keyvault/parameters.$(ENV).json'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
       overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
       deploymentName: 'KeyvaultDeployment'
