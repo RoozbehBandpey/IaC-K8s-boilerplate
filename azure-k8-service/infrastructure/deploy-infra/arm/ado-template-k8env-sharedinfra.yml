@@ -73,5 +73,5 @@ steps:
       csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/template.json'
       csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
-      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode recover
+      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
       deploymentName: 'KeyvaultDeployment'
