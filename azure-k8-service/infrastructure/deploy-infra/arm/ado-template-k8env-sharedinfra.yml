@@ -62,7 +62,7 @@ steps:
 #     deploymentMode: $(deploymentMode)
 
   - task: AzureResourceManagerTemplateDeployment@3
-    displayName: 'Deployment: Key Vault'
+    displayName: '$(deploymentMode): Key Vault'
     inputs:
       deploymentScope: 'Resource Group'
       azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
