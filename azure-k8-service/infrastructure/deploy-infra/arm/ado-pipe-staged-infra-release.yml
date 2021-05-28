@@ -22,7 +22,7 @@ trigger:
   paths:
     include:
     - azure-k8-service/infrastructure/arm-templates/*
-    - azure-k8-service/infrastructure/deploy_infra/arm/*
+    - azure-k8-service/infrastructure/deploy-infra/arm/*
 pr:
   branches:
     include:
@@ -30,10 +30,7 @@ pr:
   paths:
     include:
     - azure-k8-service/infrastructure/arm-templates/*
-    - azure-k8-service/infrastructure/deploy_infra/arm/*
-
-pool:
-  vmImage: 'ubuntu-latest'
+    - azure-k8-service/infrastructure/deploy-infra/arm/*
 
 # loading all variables groups once, to resolve Azure DevOps problems with resolving variables
 variables:
@@ -47,6 +44,8 @@ stages:
   displayName: 'IaC Build'
   jobs:
   - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - task: CopyFiles@2
       displayName: 'Copy Deployment scripts'
@@ -74,4 +73,4 @@ stages:
   - template: ado-template-k8env.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'dev'
+      environment: 'k8-env-dev'
