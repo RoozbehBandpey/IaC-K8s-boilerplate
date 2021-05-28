@@ -15,7 +15,7 @@ steps:
       azureSubscription: $(AZURE_RM_SVC_CONNECTION)
       scriptType: 'bash'
       scriptLocation: 'scriptPath'
-      scriptPath: $(Build.ArtifactStagingDirectory)/scripts/check-keyvault.sh
+      scriptPath: azure-k8-service/infrastructure/deployment-scripts/check-keyvault.sh
       arguments: '$(BASE_NAME) $(ENV)'
 
   
