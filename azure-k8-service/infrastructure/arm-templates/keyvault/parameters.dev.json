@@ -5,7 +5,7 @@
         "name": {
             "value": "k8bp-kv-dev"
         },
-        "location": {
+        "regionId": {
             "value": "westeurope"
         },
         "objectId": {

@@ -3,13 +3,19 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "aksbp-insights-prd"
+            "value": "aksbp-insights-dev"
         },
         "regionId": {
             "value": "westeurope"
         },
         "keyvaultName": {
-            "value": "aksbp-kv-prd"
+            "value": "aksbp-kv-dev"
+        },
+        "type": {
+            "value": "web"
+        },
+        "apiVersion": {
+            "value": "2020-02-02-preview"
         }
     }
 }

@@ -5,7 +5,7 @@
 		"name": {
 			"type": "string"
 		},
-        "location": {
+        "regionId": {
             "type": "string"
         },
         "apiVersion": {
@@ -32,7 +32,7 @@
             },
             "name": "[parameters('name')]",
             "apiVersion": "[parameters('apiVersion')]",
-            "location": "[parameters('location')]",
+            "regionId": "[parameters('regionId')]",
             "tags": {},
             "scale": null,
             "properties": {

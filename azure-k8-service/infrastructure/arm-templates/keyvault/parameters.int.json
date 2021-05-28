@@ -3,31 +3,36 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "k8bp-kv-int"
+            "value": "k8bp-kv-dev"
         },
-        "location": {
+        "regionId": {
             "value": "westeurope"
         },
         "objectId": {
-            "value": "spcid"
+            "value": "service_principal_object_id"
         },
         "createMode": {
             "value": "default"
         },
         "subnetObject": {
             "value": {
-                "subnets": [
-                    {
-                        "vnetResourceGroup": "k8bpit-network-int",
-                        "vnetName": "k8bpit-network-vnet-int",
-                        "name": "k8bpit-devops-sn-int"
+                "subnets": [{
+                        "vnetResourceGroup": "k8bpit-network-dev",
+                        "vnetName": "k8bpit-network-vnet-dev",
+                        "name": "k8bpit-devops-sn-dev"
                     },
                     {
-                        "vnetResourceGroup": "k8bpit-network-int",
-                        "vnetName": "k8bpit-network-vnet-int",
-                        "name": "k8bp-aml-sn-int"
+                        "vnetResourceGroup": "k8bpit-network-dev",
+                        "vnetName": "k8bpit-network-vnet-dev",
+                        "name": "k8bp-aml-sn-dev"
                     }
                 ]
+            }
+        },
+        "sku": {
+            "value": {
+                "family": "A",
+                "name": "standard"
             }
         }
     }

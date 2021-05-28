@@ -10,6 +10,15 @@
         },
         "keyvaultName": {
             "value": "aksbp-kv-dev"
+        },
+        "type": {
+            "value": "web"
+        },
+        "apiVersion": {
+            "value": "2020-02-02-preview"
+        },
+        "workspaceResourceName": {
+            "value": ""
         }
     }
 }
