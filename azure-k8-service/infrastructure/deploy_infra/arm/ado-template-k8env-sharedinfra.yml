@@ -20,12 +20,12 @@ steps:
       useGlobalConfig: true
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
   
-  # - task: AzureCLI@2
-  #   inputs:
-  #     azureSubscription: 'kubernetes-infra-release'
-  #     scriptType: 'bash'
-  #     scriptLocation: 'inlineScript'
-  #     inlineScript: 'ls $(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/'
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'ls $(Build.ArtifactStagingDirectory)'
 
   # - task: AzureResourceManagerTemplateDeployment@3
   #   displayName: 'Deployment: Key Vault'
