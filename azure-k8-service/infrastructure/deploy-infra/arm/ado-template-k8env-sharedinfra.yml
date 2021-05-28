@@ -22,6 +22,7 @@ steps:
     displayName: Check if KeyVault exists
     condition: ne(variables['deploymentMode'], 'Validation')
     inputs:
+      scriptType: 'bash'
       azureSubscription: $(AZURE_RM_SVC_CONNECTION)
       scriptLocation: inlineScript
       workingDirectory: $(Pipeline.Workspace)/$(armArtifactName)/scripts
