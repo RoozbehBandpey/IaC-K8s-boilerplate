@@ -35,3 +35,18 @@ steps:
       deploymentMode: $(deploymentMode)
       overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createmode)
       deploymentName: 'KeyvaultDeployment'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Container Registry'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(BASE_NAME)-rg-$(ENV)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/container-registry/template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/container-registry/parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)acr$(ENV)"
+      deploymentName: 'ACRDeployment'

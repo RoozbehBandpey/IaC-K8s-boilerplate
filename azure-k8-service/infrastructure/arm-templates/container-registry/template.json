@@ -8,7 +8,7 @@
         "location": {
             "type": "string"
         },
-        "apiversion": {
+        "apiVersion": {
             "type": "string"
         },
         "registrySkuName": {
@@ -30,7 +30,7 @@
                 "name": "[parameters('registrySkuName')]",
                 "tier": "[parameters('registrySkuTier')]"
             },
-            "name": "[variables('name')]",
+            "name": "[parameters('name')]",
             "apiVersion": "[parameters('apiVersion')]",
             "location": "[parameters('location')]",
             "tags": {},
