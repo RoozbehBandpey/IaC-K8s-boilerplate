@@ -27,29 +27,30 @@ steps:
   #     scriptLocation: 'inlineScript'
   #     inlineScript: 'ls $(Pipeline.Workspace)/$(armArtifactName)/arm-templates/keyvault/'
 
-  - task: AzureResourceManagerTemplateDeployment@3
-    inputs:
-      deploymentScope: 'Resource Group'
-      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
-      action: 'Create Or Update Resource Group'
-      resourceGroupName: $(RESOURCE_GROUP_NAME)
-      location: $(LOCATION)
-      templateLocation: 'Linked artifact'
-      csmFile: '/home/vsts/work/1/s/azure-k8-service/infrastructure/arm-templates/keyvault/template.json'
-      csmParametersFile: '/home/vsts/work/1/s/azure-k8-service/infrastructure/arm-templates/keyvault/parameters.$(ENV).json'
-      deploymentMode: $(deploymentMode)
-      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
-      deploymentName: 'KeyvaultDeployment'
-
-
-  # - task: AzureResourceGroupDeployment@2
+  # - task: AzureResourceManagerTemplateDeployment@3
   #   displayName: 'Deployment: Key Vault'
   #   inputs:
-  #     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+  #     deploymentScope: 'Resource Group'
+  #     azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+  #     action: 'Create Or Update Resource Group'
   #     resourceGroupName: $(RESOURCE_GROUP_NAME)
   #     location: $(LOCATION)
-  #     csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/template.json'
-  #     csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/keyvault/parameters.$(environment).json'
-  #     addSpnToEnvironment: true
-  #     overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
+  #     templateLocation: 'Linked artifact'
+  #     csmFile: '/home/vsts/work/1/s/azure-k8-service/infrastructure/arm-templates/keyvault/template.json'
+  #     csmParametersFile: '/home/vsts/work/1/s/azure-k8-service/infrastructure/arm-templates/keyvault/parameters.$(ENV).json'
   #     deploymentMode: $(deploymentMode)
+  #     overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
+  #     deploymentName: 'KeyvaultDeployment'
+
+
+  - task: AzureResourceGroupDeployment@2
+    displayName: 'Deployment: Key Vault'
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      csmFile: '$(Build.ArtifactStagingDirectory)/keyvault/template.json'
+      csmParametersFile: '$(Build.ArtifactStagingDirectory)/keyvault/parameters.$(ENV).json'
+      addSpnToEnvironment: true
+      overrideParameters: -name "$(BASE_NAME)-kv-$(ENV)" -objectId $(SP_OBJ_ID) -createMode $(createMode)
+      deploymentMode: $(deploymentMode)

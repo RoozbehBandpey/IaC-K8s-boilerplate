@@ -28,7 +28,8 @@ jobs:
               inlineScript: |
                             az group create -n $(RESOURCE_GROUP_NAME) \
                             -l $(LOCATION)
-          - template: ado-template-k8env-sharedinfra.yml
+          - task:
+            - template: ado-template-k8env-sharedinfra.yml
 
 
 
