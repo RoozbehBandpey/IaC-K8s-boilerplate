@@ -3,13 +3,13 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "ctsemseg"
+            "value": "acrname"
         },
         "location": {
             "value": "westeurope"
         },
-        "apiversion": {
-            "value": "2017-10-01"
+        "apiVersion": {
+            "value": "2019-05-01"
         },
         "registrySkuName": {
             "value": "Basic"
