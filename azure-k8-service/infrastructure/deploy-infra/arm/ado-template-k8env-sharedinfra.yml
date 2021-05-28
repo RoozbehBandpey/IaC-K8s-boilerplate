@@ -8,6 +8,18 @@
 # containers (initialization, metrics, datasets, ..)
 
 steps:
+  - download: current
+    artifact: $(armArtifactName)
+
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download k8bpit Shared Templates Artifact'
+    inputs:
+      buildType: 'specific'
+      project: '$(System.TeamProjectId)'
+      definition: '$(sharedTemplatesPipelineDefinitionId)'
+      buildVersionToDownload: 'latest'
+      artifactName: '$(sharedTemplatesArtifactName)'
+      targetPath: '$(Pipeline.Workspace)/$(sharedTemplatesArtifactName)'
   # - task: AzureCLI@2
   #   displayName: Check if KeyVault exists
   #   condition: ne(variables['deploymentMode'], 'Validation')
