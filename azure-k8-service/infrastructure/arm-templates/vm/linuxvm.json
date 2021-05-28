@@ -1,0 +1,259 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string"
+        },
+        "networkSecurityGroupRules": {
+            "type": "array"
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "publicIpAddressName": {
+            "type": "string"
+        },
+        "publicIpAddressType": {
+            "type": "string",
+            "allowedValues": [
+                "Dynamic",
+                "Static"
+            ]
+        },
+        "publicIpAddressSku": {
+            "type": "string",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ]
+        },
+        "workstreamName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the workstream the resource is for"
+            }
+        },
+        "purpose": {
+            "type": "string",
+            "metadata": {
+                "description": "Purpose of the resource, will be part of the resource's name"
+            }
+        },
+        "env": {
+            "type": "string",
+            "allowedValues": [
+                "dev",
+                "int",
+                "prd"
+            ],
+            "metadata": {
+                "description": "Environment the resource will be deployed to"
+            }
+        },
+        "osDiskType": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS"
+            ]
+        },
+        "virtualMachineSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D2s_v3",
+                "Standard_D4s_v3"
+            ]
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPublicKey": {
+            "type": "string"
+        },
+        "diagnosticsStorageAccountName": {
+            "type": "string",
+            "defaultValue": "[concat('atiit4admonitoringsa', parameters('env'))]"
+        },
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "[concat('atiit4ad-network-vnet-', parameters('env'))]",
+            "metadata": {
+                "description": "Name of the VNET the resource will be bound to"
+            }
+        },
+        "vnetRG": {
+            "type": "string",
+            "defaultValue": "[concat('atiit4ad-network-', parameters('env'))]",
+            "metadata": {
+                "description": "RG of the VNET the resource will be bound to"
+            }
+        }
+    },
+    "variables": {
+        "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
+        "subnetRef": "[concat(variables('virtualNetworkId'), '/subnets/', parameters('subnetName'))]",
+        "aadLoginExtensionName": "AADLoginForLinux",
+        "virtualMachineName": "[concat(parameters('workstreamName'), '-', parameters('purpose'), '-vm-', parameters('env'))]",
+        "networkInterfaceName": "[concat(parameters('workstreamName'), '-', parameters('purpose'), '-nic-', parameters('env'))]",
+        "networkSecurityGroupName": "[concat(parameters('workstreamName'), '-', parameters('purpose'), '-nsg-', parameters('env'))]",
+        "virtualNetworkId": "[concat(subscription().id, '/resourcegroups/', parameters('vnetRG'), '/providers/Microsoft.virtualNetworks/virtualNetworks/', parameters('vnetName'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('networkInterfaceName')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-08-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "workstream": "[parameters('workstreamName')]",
+                "stage": "[parameters('env')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
+                "[concat('Microsoft.Network/publicIpAddresses/', parameters('publicIpAddressName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIpAddress": {
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "networkSecurityGroup": {
+                    "id": "[variables('nsgId')]"
+                }
+            }
+        },
+        {
+            "name": "[variables('networkSecurityGroupName')]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-08-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "workstream": "[parameters('workstreamName')]",
+                "stage": "[parameters('env')]"
+            },
+            "properties": {
+                "securityRules": "[parameters('networkSecurityGroupRules')]"
+            }
+        },
+        {
+            "name": "[parameters('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-08-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "workstream": "[parameters('workstreamName')]",
+                "stage": "[parameters('env')]"
+            },
+            "properties": {
+                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+            },
+            "sku": {
+                "name": "[parameters('publicIpAddressSku')]"
+            }
+        },
+        {
+            "name": "[variables('virtualMachineName')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "workstream": "[parameters('workstreamName')]",
+                "stage": "[parameters('env')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('virtualMachineSize')]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "18.04-LTS",
+                        "version": "latest"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[variables('virtualMachineName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                                    "keyData": "[parameters('adminPublicKey')]"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('https://', parameters('diagnosticsStorageAccountName'), '.blob.core.windows.net/')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('virtualMachineName'),'/', variables('aadLoginExtensionName'))]",
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2019-03-01",
+            "location": "[parameters('location')]",
+            "tags": {
+                "workstream": "[parameters('workstreamName')]",
+                "stage": "[parameters('env')]"
+            },
+            "properties": {
+                "publisher": "Microsoft.Azure.ActiveDirectory.LinuxSSH",
+                "type": "AADLoginForLinux",
+                "typeHandlerVersion": "1.0",
+                "autoUpgradeMinorVersion": true
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/virtualMachines/', variables('virtualMachineName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "adminUsername": {
+            "type": "string",
+            "value": "[parameters('adminUsername')]"
+        },
+        "resourceName": {
+            "type": "string",
+            "value": "[variables('virtualMachineName')]"
+        },
+        "resourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.Compute/virtualMachines', variables('virtualMachineName'))]"
+        }
+    }
+}
