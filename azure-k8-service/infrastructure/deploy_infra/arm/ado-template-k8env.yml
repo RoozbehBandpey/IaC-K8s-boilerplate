@@ -14,7 +14,7 @@ jobs:
     - name: deploymentMode
       value: 'Validation'
     pool:
-      vmImage: '${{ parameters.vmImage }}'
+      name: '${{ parameters.agentpool }}'
     environment: '${{ parameters.environment }}'
     strategy:
       runOnce:
@@ -42,7 +42,7 @@ jobs:
     - name: deploymentMode
       value: 'Incremental'
     pool:
-      vmImage: '${{ parameters.vmImage }}'
+      name: '${{ parameters.agentpool }}'
     environment: '${{ parameters.environment }}'
     strategy:
       runOnce:

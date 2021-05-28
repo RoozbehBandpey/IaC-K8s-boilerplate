@@ -33,7 +33,7 @@ pr:
     - azure-k8-service/infrastructure/deploy_infra/arm/*
 
 pool:
-  vmImage: 'ubuntu-latest'
+  agentpool: 'aks-cicd-vm'
 
 # loading all variables groups once, to resolve Azure DevOps problems with resolving variables
 variables:
@@ -76,8 +76,8 @@ stages:
   jobs:
   - template: ado-template-k8env.yml
     parameters:
-      vmImage: 'ubuntu-latest'
-      environment: 'dev'
+      agentpool: 'aks-cicd-vm'
+      environment: 'k8-env-dev'
 
 # # Deploy Integration Environment, Run Post-Deployment Tests
 # - stage: DeployIntInfra
