@@ -18,7 +18,7 @@ jobs:
     environment: '${{ parameters.environment }}'
     strategy:
       runOnce:
-        deploy:
+        preDeploy:
           steps:
           - task: AzureCLI@1
             displayName: 'Deployment: Resource Group'

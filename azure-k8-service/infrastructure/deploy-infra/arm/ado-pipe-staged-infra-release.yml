@@ -48,15 +48,15 @@ stages:
       vmImage: 'ubuntu-latest'
     steps:
     - task: CopyFiles@2
-      displayName: 'Copy Deployment scripts'
+      displayName: 'Copy Deployment scripts to: $(Build.ArtifactStagingDirectory)'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/deployment-scripts'
-        targetFolder: '$(Pipeline.Workspace)/scripts'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
     - task: CopyFiles@2
       displayName: 'Copy ARM templates'
       inputs:
         sourceFolder: 'azure-k8-service/infrastructure/arm-templates'
-        targetFolder: '$(Pipeline.Workspace)/arm-templates'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
     - publish: '$(Pipeline.Workspace)'
       artifact: IaCAndTests
 
