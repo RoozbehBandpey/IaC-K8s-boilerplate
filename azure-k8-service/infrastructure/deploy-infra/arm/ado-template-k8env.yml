@@ -15,7 +15,6 @@ jobs:
         value: 'Validation'
     pool:
       vmImage: '${{ parameters.vmImage }}'
-    environment: '${{ parameters.environment }}'
     steps:
     - task: AzureCLI@1
       displayName: 'Deployment: Resource Group'
