@@ -65,7 +65,7 @@ steps:
       csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/appinsights/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
       overrideParameters: -name "$(BASE_NAME)-appinsight-$(ENV)" -keyvaultName "$(BASE_NAME)-kv-$(ENV)"
-      deploymentName: 'KeyvaultDeployment'
+      deploymentName: 'AppInsightDeployment'
 
   - task: AzureResourceManagerTemplateDeployment@3
     displayName: '$(deploymentMode): Container Registry'
