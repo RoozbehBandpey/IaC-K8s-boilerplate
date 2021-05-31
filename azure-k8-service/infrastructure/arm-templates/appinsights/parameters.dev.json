@@ -15,7 +15,7 @@
             "value": "web"
         },
         "apiVersion": {
-            "value": "2020-02-02-preview"
+            "value": "2019-09-01"
         },
         "workspaceResourceName": {
             "value": ""
