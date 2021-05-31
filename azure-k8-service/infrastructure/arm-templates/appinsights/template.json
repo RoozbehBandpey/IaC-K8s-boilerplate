@@ -41,7 +41,7 @@
             "[parameters('name')]"
           ],
           "properties": {
-            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), '2014-04-01').InstrumentationKey]"
+            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), parameters('apiVersion')). InstrumentationKey]"
           }
         }
     ],
