@@ -27,7 +27,7 @@
         {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[parameters('name')]",
-            "apiVersion": "2020-04-01-preview",
+            "apiVersion": "2019-09-01",
             "location": "[parameters('regionId')]",
             "tags": {
             },
