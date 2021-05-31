@@ -15,10 +15,10 @@
             "value": "web"
         },
         "componentApiVersion": {
-            "type": "2020-02-02"
+            "value": "2020-02-02"
         },
         "vaultApiVersion": {
-            "type": "2019-09-01"
+            "value": "2019-09-01"
         },
         "workspaceResourceName": {
             "value": ""
