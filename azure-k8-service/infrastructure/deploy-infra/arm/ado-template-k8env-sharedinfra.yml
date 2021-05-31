@@ -64,7 +64,7 @@ steps:
       csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/appinsights/template.json'
       csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/appinsights/parameters.$(ENV).json'
       deploymentMode: $(deploymentMode)
-      overrideParameters: -name "$(BASE_NAME)-appinsight-$(ENV)"
+      overrideParameters: --app "$(BASE_NAME)-appinsight-$(ENV)"
       deploymentName: 'KeyvaultDeployment'
 
   - task: AzureResourceManagerTemplateDeployment@3

@@ -32,7 +32,7 @@
             },
             "name": "[parameters('name')]",
             "apiVersion": "[parameters('apiVersion')]",
-            "regionId": "[parameters('regionId')]",
+            "location": "[parameters('regionId')]",
             "tags": {},
             "scale": null,
             "properties": {
