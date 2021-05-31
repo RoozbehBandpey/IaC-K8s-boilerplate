@@ -14,8 +14,11 @@
         "type": {
             "value": "web"
         },
-        "apiVersion": {
-            "value": "2020-02-02"
+        "componentApiVersion": {
+            "type": "2020-02-02"
+        },
+        "vaultApiVersion": {
+            "type": "2019-09-01"
         },
         "workspaceResourceName": {
             "value": ""

@@ -14,7 +14,10 @@
         "type": {
             "type": "string"
         },
-        "apiVersion": {
+        "componentApiVersion": {
+            "type": "string"
+        },
+        "vaultApiVersion": {
             "type": "string"
         },
         "workspaceResourceName": {
@@ -26,7 +29,7 @@
             "type": "Microsoft.Insights/components",
             "location": "[parameters('regionId')]",
             "name": "[parameters('name')]",
-            "apiVersion": "[parameters('apiVersion')]",
+            "apiVersion": "[parameters('componentApiVersion')]",
             "kind": "[parameters('type')]",
             "properties": {
                 "Application_Type": "[parameters('type')]"
@@ -35,13 +38,13 @@
         {
           "name": "[concat(parameters('keyVaultName'), '/instrumentationkey', parameters('name'))]",
           "type": "Microsoft.KeyVault/vaults/secrets",
-          "apiVersion": "[parameters('apiVersion')]",
+          "apiVersion": "[parameters('vaultApiVersion')]",
           "location": "[parameters('regionId')]",
           "dependsOn": [
             "[parameters('name')]"
           ],
           "properties": {
-            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), parameters('apiVersion')). InstrumentationKey]"
+            "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), parameters('componentApiVersion')).InstrumentationKey]"
           }
         }
     ],
