@@ -32,9 +32,8 @@ Managing state is difficult for a reason. Managing your storage improperly may l
 This might require clustering your storage possibly with multiple replicas and to add to this, you would also need to maintain periodic backups and handle seamless failovers. Now, while Kubernetes does have its way of managing storage using Persistent Volumes, Claims and Storage Classes it does not handle every problem with respect to storage and rather leaves it to the storage provider.
 Its has been possible to [plug in many storage provisioners to Kubernetes](https://kubernetes.io/docs/concepts/storage/storage-classes/#provisioner) and add [many volume plugins](https://kubernetes.io/docs/concepts/storage/volumes/) but the future aligns itself towards [CSI](https://kubernetes.io/blog/2019/01/15/container-storage-interface-ga/) and is therefore promising for compatibility with any storage provider of your choosing.
 
-For eg. if you would like to bring in file systems like Ceph onto Kubernetes, you do have a Ceph-CSI driver or if you would like to reduce friction while maintaining Ceph, you can even go for something like Rook with Ceph CSI. There are many players in this space and you can read about how they perform and differ here each providing different set of options including File, Block, NFS and more.
-If you would like to get more idea on the various storage options available.
+For eg. if you would like to bring in file systems like Ceph onto Kubernetes, you do have a Ceph-CSI driver or if you would like to reduce friction while maintaining Ceph, you can even go for something like Rook with Ceph CSI. 
 
 
-
+For more information see [Kubernetes Storage](./azure-k8-service/architecture/kubernetes_storage.md)
 
