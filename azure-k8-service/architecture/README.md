@@ -103,3 +103,69 @@ This subnet is a placeholder for Azure Bastion. You can use Bastion to securely 
 ### Azure Firewall
 The firewall instance secures outbound network traffic
 Since most treaffic is a web traffic the architecture requires A firewall (WAF) service to help govern HTTP traffic flows.
+
+### Network topology
+This architecture uses a hub-spoke network topology. The hub and spoke(s) are deployed in separate virtual networks connected through peering. Some advantages of this topology are:
+
+Segregated management. It allows for a way to apply governance and control the blast radius. It also supports the concept of landing zone with separation of duties.
+
+Minimizes direct exposure of Azure resources to the public internet.
+
+Organizations often operate with regional hub-spoke topologies. Hub-spoke network topologies can be expanded in the future and provide workload isolation.
+
+All web applications should require a web application firewall (WAF) service to help govern HTTP traffic flows.
+
+A natural choice for workloads that span multiple subscriptions.
+
+It makes the architecture extensible. To accommodate new features or workloads, new spokes can be added instead of redesigning the network topology.
+
+Certain resources, such as a firewall and DNS can be shared across networks.
+
+### Plan the IP addresses
+
+The address space of the virtual network should be large enough to hold all subnets. Account for all entities that will receive traffic. IP addresses for those entities will be allocated from the subnet address space. Consider these points.
+
+Upgrade
+
+AKS updates nodes regularly to make sure the underlying virtual machines are up to date on security features and other system patches. During an upgrade process, AKS creates a node that temporarily hosts the pods, while the upgrade node is cordoned and drained. That temporary node is assigned an IP address from the cluster subnet.
+
+For pods, you might need additional addresses depending on your strategy. For rolling updates, you'll need addresses for the temporary pods that run the workload while the actual pods are updated. If you use the replace strategy, pods are removed, and the new ones are created. So, addresses associated with the old pods are reused.
+
+Scalability
+
+Take into consideration the node count of all system and user nodes and their maximum scalability limit. Suppose you want to scale out by 400%. You'll need four times the number of addresses for all those scaled-out nodes.
+
+In this architecture, each pod can be contacted directly. So, each pod needs an individual address. Pod scalability will impact the address calculation. That decision will depend on your choice about the number of pods you want to grow.
+
+Azure Private Link addresses
+
+Factor in the addresses that are required for communication with other Azure services over Private Link. In this architecture, we have two addresses assigned for the links to Azure Container Registry and Key Vault.
+
+Certain addresses are reserved for use by Azure. They can't be assigned.
+
+The preceding list isn't exhaustive. If your design has other resources that will impact the number of available IP addresses, accommodate those addresses.
+
+This architecture is designed for a single workload. For multiple workloads, you may want to isolate the user node pools from each other and from the system node pool. That choice may result in more subnets that are smaller in size. Also, the ingress resource might be more complex. You might need multiple ingress controllers that will require extra addresses.
+
+For the complete set of considerations for this architecture, see AKS baseline Network Topology.
+
+For information related to planning IP for an AKS cluster, see Plan IP addressing for your cluster.
+
+### What address ranges can I use in my VNets?
+We recommend that you use the address ranges enumerated in RFC 1918, which have been set aside by the IETF for private, non-routable address spaces:
+
+10.0.0.0 - 10.255.255.255 (10/8 prefix)
+172.16.0.0 - 172.31.255.255 (172.16/12 prefix)
+192.168.0.0 - 192.168.255.255 (192.168/16 prefix)
+Other address spaces may work but may have undesirable side effects.
+
+In addition, you cannot add the following address ranges:
+
+224.0.0.0/4 (Multicast)
+255.255.255.255/32 (Broadcast)
+127.0.0.0/8 (Loopback)
+169.254.0.0/16 (Link-local)
+168.63.129.16/32 (Internal DNS)
+
+
+
