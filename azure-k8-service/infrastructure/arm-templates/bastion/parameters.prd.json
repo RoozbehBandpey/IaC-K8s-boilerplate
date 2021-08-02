@@ -1,0 +1,23 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "care4me_rg_prd"
+        },
+        "regionId": {
+            "value": "koreasouth"
+        },
+        "objectId": {
+            "value": "service_principal_object_id"
+        },
+        "createMode": {
+            "value": "default"
+        },        
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+        }
+    }
+}

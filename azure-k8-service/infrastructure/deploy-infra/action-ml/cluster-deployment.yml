@@ -1,0 +1,176 @@
+# Template pipeline for the AKS Environment Deployment
+# This includes shared infrastructure and n AKS workspaces, compute and
+# their configuration.
+# 
+#
+# :param environment: the environment for deployment e.g. dev
+
+jobs:
+  - deployment: DeployK8sInfra
+    variables:
+      - group: mmc-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(PURPOSE)-$(ENV)
+      - name: PURPOSE
+        value: actionml
+      - name: AKS_NAME
+        value: $(BASE_NAME)-aks-$(PURPOSE)-$(ENV)
+      - name: deploymentMode
+        value: 'Validation'
+      - name: imagePullSecret
+        value: '$(BASE_NAME)-image-pull-secret-$(PURPOSE)-$(ENV)'
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    environment: '${{ parameters.environment }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            displayName: Download Artifacts
+            artifact: $(artifactName)
+
+          - task: HelmInstaller@1
+            displayName: Install Helm
+            inputs: 
+              helmVersionToInstall: 3.6.0
+              installKubectl: true
+
+          # This is for prevention of interactive login
+          - task: AzureCLI@1
+            displayName: 'Login with SP'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            tenantId=$(az account show --query tenantId -o tsv)
+                            az login --service-principal -u $(SP_APP_ID) -p $(SP_SECRET_VAL) -t $tenantId
+
+          - task: AzureCLI@1
+            displayName: 'Get AKS Creds'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az aks get-credentials --admin --resource-group $(RESOURCE_GROUP_NAME) --name $(AKS_NAME)
+
+          - task: AzureCLI@2
+            displayName: Create harness namespace
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/create-namespace.sh
+              arguments: 'harness --force'
+
+          - task: AzureCLI@2
+            displayName: Create ingress namespace
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/create-namespace.sh
+              arguments: 'ingress'
+
+          - task: AzureCLI@1
+            displayName: 'Deploy ingress-nginx Helm Repo'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+                            helm upgrade --install nginx-ingress ingress-nginx/ingress-nginx \
+                              --namespace ingress \
+                              --set controller.replicaCount=2 \
+                              --set nodeSelector.agentpool=apppool \
+                              --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+          - task: AzureCLI@1
+            displayName: 'Deploy ElasticSearch Helm Repo'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            helm repo add elastic https://helm.elastic.co
+                            helm upgrade --install elasticsearch elastic/elasticsearch \
+                              --namespace harness \
+                              --set nodeSelector.agentpool=apppool \
+                              --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+          - task: AzureCLI@1
+            displayName: 'Deploy MongoDB Helm Repo'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            helm repo add bitnami https://charts.bitnami.com/bitnami
+                            helm upgrade --install mongodb bitnami/mongodb  \
+                              --namespace harness \
+                              --set nodeSelector.agentpool=apppool \
+                              --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set auth.rootPassword='' \
+                              --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
+
+          - task: Docker@2
+            displayName: Login to ACR
+            inputs:
+              command: login
+              containerRegistry: mmc-svc-actionml-docker
+
+
+          - task: AzureCLI@1
+            displayName: 'Pull and push to ACR harness'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az acr import \
+                            --name $(BASE_NAME)acr$(PURPOSE)$(ENV) \
+                            --source docker.io/actionml/harness:latest \
+                            --image harness:latest \
+                            --force
+
+          - task: AzureCLI@1
+            displayName: 'Pull and push to ACR harness cli'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az acr import \
+                            --name $(BASE_NAME)acr$(PURPOSE)$(ENV) \
+                            --source docker.io/actionml/harness-cli:latest \
+                            --image harness-cli:latest \
+                            --force
+
+          - task: AzureCLI@1
+            displayName: 'Create image pull secret'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            ACRPWD=$(az acr credential show -n $(BASE_NAME)acr$(PURPOSE)$(ENV) --query "passwords[0].value" -o tsv)
+                            kubectl create secret docker-registry $(imagePullSecret) --docker-server=$(BASE_NAME)acr$(PURPOSE)$(ENV).azurecr.io --docker-username=$(BASE_NAME)acr$(PURPOSE)$(ENV) --docker-password=$ACRPWD --namespace harness --v=4
+                            
+          - task: AzureCLI@1
+            displayName: 'Deploy harness'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/harness.yml --v=4
+
+          - task: AzureCLI@1
+            displayName: 'Deploy harness cli'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/harness-cli.yml --v=4
+
+
+

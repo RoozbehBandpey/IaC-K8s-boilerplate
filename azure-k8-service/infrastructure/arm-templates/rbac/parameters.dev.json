@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "principalId": {
+      "value": "GEN-AZUREAD-OBJECTID"
+    },
+    "roleDefinitionID": {
+      "value": "4d97b98b-1d4f-4787-a291-c67834d212e7"
+    },
+    "principalType": {
+      "value": "ServicePrincipal"
+    },
+    "apiVersion": {
+      "value": "2020-04-01-preview"
+    },
+    "tags": {
+        "value": {
+            "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+        }
+    },
+    "subnetObject": {
+      "value": {
+        "subnet": {
+          "vnetName": "mmc-vnet-dev",
+          "name": "mmc-sn-dev-aks"
+        }
+      }
+    }
+  }
+}

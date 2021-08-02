@@ -1,0 +1,81 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "roleDefinitionId": {
+      "type": "string",
+      "defaultValue": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'acdd72a7-3385-48ef-bd42-f606fba81ae7')]",
+      "metadata": {
+        "description": "Id of the role to be assigned"
+      }
+    },
+    "principalType": {
+      "type": "string",
+      "allowedValues": [
+        "User",
+        "Group",
+        "ServicePrincipal",
+        "Unknown",
+        "DirectoryRoleTemplate",
+        "ForeignGroup",
+        "Application",
+        "MSI",
+        "DirectoryObjectOrGroup",
+        "Everyone"
+      ]
+    },
+    "principalId": {
+      "type": "string",
+      "metadata": {
+        "description": "Id of the entity to which the role is assigned"
+      }
+    },
+    "apiVersion": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object"
+    },
+    "subnetObject": {
+      "type": "object"
+    },
+    "roleAssignmentName": {
+      "type": "string",
+      "defaultValue": "[newGuid()]"
+    }
+  },
+  "variables": {
+    "roleAssignmentName": "[guid(resourceGroup().id)]",
+    "vnetRoleAssignmentName": "[concat(parameters('subnetObject').subnet.vnetName, '/', parameters('subnetObject').subnet.name, '/Microsoft.Authorization/', variables('roleAssignmentName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "[parameters('apiVersion')]",
+      "name": "[variables('roleAssignmentName')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+        "principalId": "[parameters('principalId')]",
+        "canDelegate": "false",
+        "scope": "[resourceGroup().id]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets/providers/roleAssignments",
+      "apiVersion": "2018-09-01-preview",
+      "name": "[variables('vnetRoleAssignmentName')]",
+      "properties": {
+        "roleDefinitionId": "[resourceId('Microsoft.Authorization/roleDefinitions', parameters('roleDefinitionId'))]",
+        "principalId": "[parameters('principalId')]",
+        "scope": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('subnetObject').subnet.vnetName), '/subnets/', parameters('subnetObject').subnet.name)]"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Authorization/roleAssignments', variables('roleAssignmentName'))]"
+    }
+  }
+}

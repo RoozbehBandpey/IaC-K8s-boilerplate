@@ -1,0 +1,52 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "vnetname"
+        },
+        "regionId": {
+            "value": "koreacentral"
+        },
+        "apiVersion": {
+            "value": "2020-11-01"
+        },
+		"tags": {
+			 "value": {
+                 "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+		},
+		"aksSubnet":{
+			"value": {
+				"name": "mmc-sn-dev-aks",
+				"addressPrefix": "172.16.0.0/21",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+			}
+		},
+		"publicFacingSubnet":{
+			"value": {
+				"name": "mmc-sn-dev-public-facing",
+				"addressPrefix": "172.16.5.0/24",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+			}
+		},
+		"bastionSubnet":{
+			"value": {
+				"name": "mmc-sn-dev-bastion",
+				"addressPrefix": "172.16.6.0/25",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+			}
+		},
+		"reservedSubnet":{
+			"value": {
+				"name": "mmc-sn-dev-reserved",
+				"addressPrefix": "172.16.6.128/25",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+			}
+		}
+    }
+}

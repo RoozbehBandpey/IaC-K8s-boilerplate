@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String"
+        },
+        "regionId": {
+            "type": "String"
+        },
+        "tags": {
+            "type": "object"
+        },
+        "apiVersion": {
+            "type": "string"
+        },
+        "publicIpSkuName": {
+            "type": "string"
+        },
+        "publicIpSkuTier": {
+            "type": "string"
+        },
+        "publicIPAllocationMethod": {
+            "type": "string"
+        },
+        "publicIPAddressVersion": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "[parameters('apiVersion')]",
+            "name": "[parameters('name')]",
+            "location": "[parameters('regionId')]",
+            "tags": "[parameters('tags')]",            
+            "sku": {
+                "name": "[parameters('publicIpSkuName')]",
+                "tier": "[parameters('publicIpSkuTier')]"
+            },
+            "properties": {
+                "publicIPAddressVersion": "[parameters('publicIPAddressVersion')]",
+                "publicIPAllocationMethod": "[parameters('publicIPAllocationMethod')]"
+            }
+        }
+    ]
+}

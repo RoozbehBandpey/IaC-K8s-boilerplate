@@ -1,0 +1,171 @@
+# Template pipeline for the deployment of shared azure infrastructure
+# that the recommender api depend on.
+#
+# This pipeline deploys a KeyVault instance, Two Storage accounts (one
+# for the ML workspace logs, one as a shared data store), two Container
+# Registries (one staging, one ML workspace-related) and an Application
+# Insights instance. Storage accounts are preconfigured with a set of blob
+# containers (initialization, metrics, datasets, ..)
+
+steps:
+  - download: current
+    displayName: Download Artifacts
+    artifact: $(armArtifactName)
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Virtual Network'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/vnet/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/vnet/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-vnet-$(PURPOSE)-$(ENV)"
+      deploymentName: VnetDeployment
+
+  - task: AzureCLI@2
+    displayName: Check if KeyVault exists
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/a/scripts/check-keyvault.sh
+      arguments: '$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Key Vault'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/keyvault/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2" -createMode $(createmode)
+      deploymentName: KeyvaultDeployment
+
+  # Add agent IP to key vault white list
+  - task: AzureCLI@2
+    displayName: Build agent IP to key vault white list
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      scriptLocation: scriptPath
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/a/scripts/whitelist-agent-for-keyvault.sh
+      arguments: '$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2'
+  
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Log Analytics Workspace'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/loganalytics-workspace/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/loganalytics-workspace/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-laws-$(PURPOSE)-$(ENV)"
+      deploymentName: 'LogAnalyticsWorkSpaceDeployment'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Application Insight'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/application-insights/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/application-insights/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-appinsights-$(PURPOSE)-$(ENV)" -workspaceResourceName "$(BASE_NAME)-laws-$(PURPOSE)-$(ENV)" -keyvaultName "$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2"
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): Container Registry'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/container-registry/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/container-registry/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)acr$(PURPOSE)$(ENV)"
+      deploymentName: ACRDeployment
+
+  - task: AzureCLI@2
+    displayName: Set ACR secrets
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/a/scripts/set-acr-secret.sh
+      arguments: '$(BASE_NAME)acr$(PURPOSE)$(ENV) $(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2'
+
+  - task: AzureCLI@2
+    displayName: Creating linux ssh key
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      scriptLocation: scriptPath
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/a/scripts/ssh-handler.sh
+      arguments: '"$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2" linux-ssh-pub-key'
+
+  - task: AzureCLI@1
+    displayName: 'Store the service principal id in KeyVault'
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    az keyvault secret set --vault-name $(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2 --name spn-id --value $(SP_APP_ID) >/dev/null
+
+  - task: AzureCLI@1
+    displayName: 'Store the service principal secret in KeyVault'
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+                    az keyvault secret set --vault-name $(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2 --name spn-secret --value $(SP_SECRET_VAL) >/dev/null
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: '$(deploymentMode): AKS Cluster'
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: $(AZURE_RM_SVC_CONNECTION)
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: $(RESOURCE_GROUP_NAME)
+      location: $(LOCATION)
+      templateLocation: 'Linked artifact'
+      csmFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/aks/actionml.template.json'
+      csmParametersFile: '$(Pipeline.Workspace)/$(armArtifactName)/a/aks/actionml.parameters.$(ENV).json'
+      deploymentMode: $(deploymentMode)
+      overrideParameters: -name "$(BASE_NAME)-aks-$(PURPOSE)-$(ENV)" -logAnalyticsWorkspace "$(BASE_NAME)-laws-$(PURPOSE)-$(ENV)" -sshRSAPublicKey "$(ssh_value)"
+      deploymentName: AKSBDeployment
+
+  - task: AzureCLI@2
+    displayName: Remove build agent IP to key vault white list
+    condition: ne(variables['deploymentMode'], 'Validation')
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      scriptLocation: scriptPath
+      scriptPath: $(Pipeline.Workspace)/$(armArtifactName)/a/scripts/whitelist-agent-for-keyvault.sh
+      arguments: '-r "$(BASE_NAME)-kv-$(PURPOSE)-$(ENV)-2" "$(buildAgentIpAddress)"'

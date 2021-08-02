@@ -1,0 +1,68 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "vnetname"
+    },
+    "regionId": {
+      "value": "koreacentral"
+    },
+    "apiVersion": {
+      "value": "2020-11-01"
+    },
+    "tags": {
+      "value": {
+        "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+      }
+    },
+    "aksSubnet": {
+      "value": {
+        "name": "mmc-sn-dev-actionml-aks",
+        "addressPrefix": "172.16.0.0/18",
+        "privateEndpointNetworkPolicies": "Enabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      }
+    },
+    "reservedSubnet": {
+      "value": {
+        "name": "mmc-sn-dev-actionml-reserved",
+        "addressPrefix": "172.16.64.0/24",
+        "privateEndpointNetworkPolicies": "Enabled",
+        "privateLinkServiceNetworkPolicies": "Enabled"
+      }
+    },
+    "serviceEndpoints": {
+      "value": [
+        {
+          "service": "Microsoft.KeyVault",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.Web",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.ContainerRegistry",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.Storage",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.Sql",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.AzureCosmosDB",
+          "locations": ["*"]
+        },
+        {
+          "service": "Microsoft.AzureActiveDirectory",
+          "locations": ["*"]
+        }
+      ]
+    }
+  }
+}

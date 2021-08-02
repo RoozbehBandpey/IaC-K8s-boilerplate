@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "regionId": {
+            "type": "string"
+        },
+        "apiVersion": {
+            "type": "string"
+        },
+		 "sku": {
+            "type": "string"
+        },
+        "tags": {
+            "type": "object"
+        }
+    },
+    "resources": [
+               {
+            "apiVersion": "[parameters('apiVersion')]",
+            "name": "[parameters('name')]",
+            "location": "[parameters('regionId')]",
+            "tags": "[parameters('tags')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "properties": {
+                "sku": {
+                    "name": "[parameters('sku')]"
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "resourceId": {
+          "value": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('name'))]",
+          "type": "string"
+        }
+    }
+}

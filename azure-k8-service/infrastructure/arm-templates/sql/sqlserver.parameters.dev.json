@@ -1,0 +1,49 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+    "name": {
+      "value": "mmc-sqlserver-dev"
+    },
+    "regionId": {
+      "value": "koreacentral"
+    },
+    "tags": {
+        "value": {
+            "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+        }
+    },
+    "apiVersion": {
+      "value": "2021-02-01-preview"
+    },
+    "subnetObject": {
+      "value": {
+        "subnet": {
+          "vnetName": "mmc-vnet-dev",
+          "name": "mmc-sn-dev-aks"
+        }
+      }
+    },
+    "administratorLogin": {
+      "value": "mmcdevadmin"
+    },
+    "administratorLoginPassword": {
+      "value": ""
+    },
+    "emailsForSecurityAlerts": {
+      "value": ["setopal@emea.corpdir.net", "bandper@emea.corpdir.net"]
+    },
+    "aadAdminObjectId": {
+      "value": "74348b92-f727-4857-9e0c-77e37f9167ab"
+    },
+    "aadAdminUserName": {
+      "value": "setopal@emea.corpdir.net"
+    },
+    "allowAzureIps": {
+      "value": true
+    },
+    "enableAdvancedDataSecurityAndVulnerabilityAssessments": {
+      "value": true
+    }
+  }
+}

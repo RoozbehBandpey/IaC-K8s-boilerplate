@@ -1,0 +1,46 @@
+# Content of file api.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapi
+  template:
+    metadata:
+      labels:
+        app: myapi
+    spec:
+      containers:
+        - name: myapi
+          env:
+            - name: ConnectionStrings__DefaultConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: sqlsecrets
+                  key: constr
+          image: mmcacrdev.azurecr.io/adc-api-sql:1.0
+          resources:
+            limits:
+              memory: '128Mi'
+              cpu: '500m'
+          ports:
+            - containerPort: 5000
+      imagePullSecrets:
+        - name: mmc-image-pull-secret-dev
+      nodeSelector:
+        agentpool: apppool
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: contactsapi
+spec:
+  selector:
+    app: myapi
+  ports:
+    - protocol: TCP
+      port: 8080 # 'external' port...
+      targetPort: 5000 # 'internal' port...

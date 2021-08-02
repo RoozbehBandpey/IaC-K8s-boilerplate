@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "regionId": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "object"
+    },
+    "keyvaultName": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "apiVersion": {
+      "type": "string"
+    },
+    "workspaceResourceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "location": "[parameters('regionId')]",
+      "name": "[parameters('name')]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "tags": "[parameters('tags')]",
+      "kind": "[parameters('type')]",
+      "properties": {
+        "ApplicationId": "[parameters('name')]",
+        "Application_Type": "[parameters('type')]",
+        "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceResourceName'))]"
+      }
+    },
+    {
+      "name": "[concat(parameters('keyVaultName'), '/instrumentationkey', parameters('name'))]",
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2021-04-01-preview",
+      "location": "[parameters('regionId')]",
+      "dependsOn": ["[parameters('name')]"],
+      "properties": {
+        "value": "[reference(resourceId('Microsoft.Insights/components', parameters('name')), '2014-04-01').InstrumentationKey]"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "value": "[resourceId('microsoft.insights/components', parameters('name'))]",
+      "type": "string"
+    }
+  }
+}

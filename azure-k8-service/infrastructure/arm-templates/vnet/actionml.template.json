@@ -1,0 +1,102 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type": "string"
+    },
+    "regionId": {
+      "type": "string"
+    },
+    "apiVersion": {
+      "type": "string"
+    },
+    "aksSubnet": {
+      "type": "object"
+    },
+    "reservedSubnet": {
+      "type": "object"
+    },
+    "serviceEndpoints": {
+      "type": "array"
+    },
+    "tags": {
+      "type": "object"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "[parameters('apiVersion')]",
+      "name": "[parameters('name')]",
+      "location": "[parameters('regionId')]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": ["172.16.0.0/17"]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('aksSubnet').name]",
+            "properties": {
+              "addressPrefix": "[parameters('aksSubnet').addressPrefix]",
+              "serviceEndpoints": "[parameters('serviceEndpoints')]",
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "[parameters('aksSubnet').privateEndpointNetworkPolicies]",
+              "privateLinkServiceNetworkPolicies": "[parameters('aksSubnet').privateLinkServiceNetworkPolicies]"
+            }
+          },
+          {
+            "name": "[parameters('reservedSubnet').name]",
+            "properties": {
+              "addressPrefix": "[parameters('reservedSubnet').addressPrefix]",
+              "serviceEndpoints": "[parameters('serviceEndpoints')]",
+              "delegations": [],
+              "privateEndpointNetworkPolicies": "[parameters('reservedSubnet').privateEndpointNetworkPolicies]",
+              "privateLinkServiceNetworkPolicies": "[parameters('reservedSubnet').privateLinkServiceNetworkPolicies]"
+            }
+          }
+        ],
+        "virtualNetworkPeerings": [],
+        "enableDdosProtection": false
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "[parameters('apiVersion')]",
+      "name": "[concat(parameters('name'), '/', parameters('aksSubnet').name)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+      ],
+      "properties": {
+        "addressPrefix": "[parameters('aksSubnet').addressPrefix]",
+        "serviceEndpoints": "[parameters('serviceEndpoints')]",
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "[parameters('aksSubnet').privateEndpointNetworkPolicies]",
+        "privateLinkServiceNetworkPolicies": "[parameters('aksSubnet').privateLinkServiceNetworkPolicies]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "[parameters('apiVersion')]",
+      "name": "[concat(parameters('name'), '/', parameters('reservedSubnet').name)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]"
+      ],
+      "properties": {
+        "addressPrefix": "[parameters('reservedSubnet').addressPrefix]",
+        "serviceEndpoints": "[parameters('serviceEndpoints')]",
+        "delegations": [],
+        "privateEndpointNetworkPolicies": "[parameters('reservedSubnet').privateEndpointNetworkPolicies]",
+        "privateLinkServiceNetworkPolicies": "[parameters('reservedSubnet').privateLinkServiceNetworkPolicies]"
+      }
+    }
+  ],
+  "outputs": {
+    "resourceId": {
+      "value": "[resourceId('Microsoft.Network/virtualNetworks', parameters('name'))]",
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "value": "aks-nsg-name"
+    },
+    "tags": {
+        "value": {
+            "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+        }
+    },
+    "regionId": {
+        "value": "koreacentral"
+    }
+  }
+}

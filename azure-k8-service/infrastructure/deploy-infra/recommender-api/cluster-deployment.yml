@@ -1,0 +1,245 @@
+# Template pipeline for the AKS Environment Deployment
+# This includes shared infrastructure and n AKS workspaces, compute and
+# their configuration.
+# 
+#
+# :param environment: the environment for deployment e.g. dev
+
+jobs:
+  - deployment: DeployK8sInfra
+    variables:
+      - group: mmc-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(ENV)
+      - name: AKS_NAME
+        value: $(BASE_NAME)-aks-$(ENV)
+      - name: deploymentMode
+        value: 'Validation'
+      - name: imagePullSecret
+        value: '$(BASE_NAME)-image-pull-secret-$(ENV)' #imagePullSecret is created in https://daimler.visualstudio.com/Mercedes%20me%20Care/_build?definitionId=13159&_a=summary
+      - name: serviceNamespace
+        value: recommender-api
+      - name: ingressNamespace
+        value: ingress
+      - name: monitoringNamespace
+        value: monitor
+      - name: testingNamespace
+        value: tests
+
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    environment: '${{ parameters.environment }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            displayName: Download Artifacts
+            artifact: $(artifactName)
+
+          - task: HelmInstaller@1
+            displayName: Install Helm
+            inputs: 
+              helmVersionToInstall: 3.6.0
+              installKubectl: true
+
+          # This is for prevention of interactive login
+          - task: AzureCLI@1
+            displayName: 'Login with SP'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            tenantId=$(az account show --query tenantId -o tsv)
+                            az login --service-principal -u $(SP_APP_ID) -p $(SP_SECRET_VAL) -t $tenantId
+
+          - task: AzureCLI@1
+            displayName: 'Get AKS Creds'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            az aks get-credentials --admin --resource-group $(RESOURCE_GROUP_NAME) --name $(AKS_NAME)
+
+          - task: AzureCLI@2
+            displayName: Create $(ingressNamespace) namespace
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/create-namespace.sh
+              arguments: '$(ingressNamespace)'
+
+          - task: AzureCLI@2
+            displayName: Create $(monitoringNamespace) namespace
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/create-namespace.sh
+              arguments: '$(monitoringNamespace)'
+
+          - task: AzureCLI@1
+            displayName: 'Deploy ingress-nginx Helm Repo'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+                            helm upgrade --install nginx-ingress ingress-nginx/ingress-nginx \
+                              --namespace $(ingressNamespace) \
+                              --set controller.replicaCount=2 \
+                              --set nodeSelector.agentpool=apppool \
+                              --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux \
+                              --set controller.service.externalTrafficPolicy=Local
+
+          - task: AzureCLI@1
+            displayName: 'Get Ingress External IP'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            external_ip=$(kubectl --namespace $(ingressNamespace) get services nginx-ingress-ingress-nginx-controller --output jsonpath="{.status.loadBalancer.ingress[0].ip}")
+                            echo "##vso[task.setvariable variable=external_ip]$external_ip"
+
+          # - task: AzureCLI@1
+          #   displayName: 'Cert generation'
+          #   inputs:
+          #     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          #     scriptLocation: 'inlineScript'
+          #     inlineScript: |
+          #                   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out aks-ingress-tls.crt -keyout aks-ingress-tls.key -subj "/CN=mmc-aks-dev-dns-48b692a2.hcp.koreacentral.azmk8s.io/O=aks-ingress-tls"
+          #                   kubectl create secret tls aks-ingress-tls \
+          #                     --namespace $(ingressNamespace) \
+          #                     --key aks-ingress-tls.key \
+          #                     --cert aks-ingress-tls.crt
+                            
+          - task: AzureCLI@2
+            displayName: Creating TLS certificates
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/tls-handler.sh
+              arguments: '$(ingressNamespace) aks-ingress-tls'
+
+# Setup Prometheus Monitoring
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Prometheus ClusterRoles'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/prometheus/cluster-role.yaml --v=4
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Prometheus config map'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/prometheus/config-map.yaml --v=4
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Prometheus'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/prometheus/prometheus-deployment.yaml --v=4
+
+# Setup Kube State Metrics
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Kube State Metrics'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/kube-state-metrics-configs/ --v=4
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Prometheus service'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/prometheus/prometheus-service.yaml --v=4
+
+# Setup Grafana
+
+          - task: AzureCLI@1
+            displayName: 'Deploy Grafana'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/grafana/ --v=4
+
+# Set up tests
+
+
+          - task: AzureCLI@2
+            displayName: Create $(testingNamespace) namespace
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptType: bash
+              scriptLocation: scriptPath
+              scriptPath: $(Pipeline.Workspace)/$(artifactName)/scripts/create-namespace.sh
+              arguments: '$(testingNamespace) --force'
+
+
+          - task: AzureCLI@1
+            displayName: 'Deploy $(testingNamespace): Create SQL Server secrets'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl create secret generic sqlsecrets --from-literal=pwd="$(sqlServerAdminPass)" --from-literal=constr="Server=tcp:mssqlsvr,1433;Initial Catalog=scmcontactsdb;Persist Security Info=False;User ID=sa;Password=$(sqlServerAdminPass);MultipleActiveResultSets=False;Encrypt=False;TrustServerCertificate=True;Connection Timeout=30;" --v=4 --namespace $(testingNamespace)
+
+
+          - task: AzureCLI@1
+            displayName: 'Deploy $(testingNamespace): SQL Server '
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/tests/sqlserver.yaml --v=4 --namespace $(testingNamespace)
+
+          - task: AzureCLI@1
+            displayName: 'Create image pull secret for $(testingNamespace)'
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            ACRPWD=$(az acr credential show -n $(BASE_NAME)acr$(ENV) --query "passwords[0].value" -o tsv)
+                            kubectl create secret docker-registry $(imagePullSecret) --docker-server=$(BASE_NAME)acr$(ENV).azurecr.io --docker-username=$(BASE_NAME)acr$(ENV) --docker-password=$ACRPWD --namespace $(testingNamespace) --v=4
+
+          - task: AzureCLI@1
+            displayName: 'Deploy $(testingNamespace): API '
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/tests/api.yaml --v=4 --namespace $(testingNamespace)
+
+                            
+          - task: AzureCLI@1
+            displayName: 'Deploy $(testingNamespace): Load Balancer '
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/tests/api-service-loadbalancer.yaml --v=4 --namespace $(testingNamespace)
+
+          - task: AzureCLI@1
+            displayName: 'Deploy $(testingNamespace): Load Balancer '
+            inputs:
+              azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                            kubectl apply -f $(Pipeline.Workspace)/$(artifactName)/manifests/tests/api-ingress.yaml --v=4 --namespace $(testingNamespace)
+

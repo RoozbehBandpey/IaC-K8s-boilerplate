@@ -1,0 +1,107 @@
+# Kubernetes Infrastructure Release
+#
+# This pipeline's scope is to validate and deploy infrastructural
+# changes to the microservice environments with kubernetes. This includes:
+#
+# * a stage to publish ARM templates and tests
+# * a stage to deploy and validate the functional working of the
+#   deployed infrastructure in an integration environment
+# * the execution of tests scoped to custom roles in the AAD tenant
+# * the deployment to the microservice environments
+#   * dev
+#   * int
+#   * prod
+#
+# This pipeline is automatically triggered on any change in the arm-templates
+# folder containing this ADO pipeline definition and infra-as-code.
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infrastructure/deploy-infra/recommender-api/*
+    - infrastructure/deploy-infra/recommender-api/*
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infrastructure/deploy-infra/recommender-api/*
+    - infrastructure/deploy-infra/recommender-api/*
+
+# loading all variables groups once, to resolve Azure DevOps problems with resolving variables
+variables:
+- name: productionReady
+  value: false
+- name: artifactName
+  value: recommender-api
+- group: mmc-vg-dev
+- group: mmc-vg-int
+- group: mmc-vg-prd
+
+stages:
+# Validate and publish dependencies for downstream stages
+- stage: Build
+  displayName: 'Manifest Build'
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: CopyFiles@2
+      displayName: 'Copy Deployment scripts to: $(Build.ArtifactStagingDirectory)'
+      inputs:
+        sourceFolder: 'infrastructure/deployment-scripts'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+    - task: CopyFiles@2
+      displayName: 'Copy Kubernetes recommender-api Manifests'
+      inputs:
+        sourceFolder: 'infrastructure/deploy-infra/recommender-api/manifests'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/manifests'
+    - publish: '$(Build.ArtifactStagingDirectory)'
+      artifact: $(artifactName)
+
+# Deploy DEV 
+- stage: DeployDevCluster
+  displayName: 'Deploy: DEV'
+  dependsOn: Build
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', false))
+  variables:
+  - group: mmc-vg-dev
+
+  jobs:
+  - template: cluster-deployment.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-dev'
+
+# Deploy INT 
+- stage: DeployIntCluster
+  displayName: 'Deploy: INT'
+  dependsOn: DeployDevCluster
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
+  variables:
+  - group: mmc-vg-int
+
+  jobs:
+  - template: cluster-deployment.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-int'
+
+# Deploy PRD 
+- stage: DeployPrdCluster
+  displayName: 'Deploy: PRD'
+  dependsOn: DeployIntCluster
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
+  variables:
+  - group: mmc-vg-prd
+
+  jobs:
+  - template: cluster-deployment.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-prd'

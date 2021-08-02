@@ -6,27 +6,25 @@
             "value": "k8bp-kv-dev"
         },
         "regionId": {
-            "value": "westeurope"
+            "value": "koreacentral"
         },
-        "objectId": {
-            "value": "service_principal_object_id"
+		"apiVersion": {
+            "value":"2020-04-01-preview"
         },
         "createMode": {
             "value": "default"
         },
+		"tags": {
+			 "value": {
+                 "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+		},
         "subnetObject": {
             "value": {
-                "subnets": [{
-                        "vnetResourceGroup": "k8bpit-network-dev",
-                        "vnetName": "k8bpit-network-vnet-dev",
-                        "name": "k8bpit-devops-sn-dev"
-                    },
-                    {
-                        "vnetResourceGroup": "k8bpit-network-dev",
-                        "vnetName": "k8bpit-network-vnet-dev",
-                        "name": "k8bp-aml-sn-dev"
+                "subnet": {
+                        "vnetName": "mmc-vnet-dev",
+                        "name": "mmc-sn-dev-aks"
                     }
-                ]
             }
         },
         "sku": {
@@ -34,6 +32,107 @@
                 "family": "A",
                 "name": "standard"
             }
+        },
+		"accessPolicies": {
+            "value": [
+                {
+                    "objectId": "5a06e4db-63d1-454d-9890-986696caaed4",
+                    "tenantId": "9652d7c2-1ccf-4940-8151-4a92bd474ed0",
+                    "permissions": {
+                        "keys": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore",
+                            "Decrypt",
+                            "Encrypt",
+                            "UnwrapKey",
+                            "WrapKey",
+                            "Verify",
+                            "Sign",
+                            "Purge"
+                        ],
+                        "secrets": [
+                            "Get",
+                            "List",
+                            "Set",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore",
+                            "Purge"
+                        ],
+                        "certificates": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore",
+                            "ManageContacts",
+                            "ManageIssuers",
+                            "GetIssuers",
+                            "ListIssuers",
+                            "SetIssuers",
+                            "DeleteIssuers",
+                            "Purge"
+                        ]
+                    },
+                    "applicationId": ""
+                },
+                {
+                    "objectId": "f22105b9-9386-42bf-a8fc-eec46c130f7d",
+                    "tenantId": "9652d7c2-1ccf-4940-8151-4a92bd474ed0",
+                    "permissions": {
+                        "keys": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore"
+                        ],
+                        "secrets": [
+                            "Get",
+                            "List",
+                            "Set",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore"
+                        ],
+                        "certificates": [
+                            "Get",
+                            "List",
+                            "Update",
+                            "Create",
+                            "Import",
+                            "Delete",
+                            "Recover",
+                            "Backup",
+                            "Restore",
+                            "ManageContacts",
+                            "ManageIssuers",
+                            "GetIssuers",
+                            "ListIssuers",
+                            "SetIssuers",
+                            "DeleteIssuers"
+                        ]
+                    },
+                    "applicationId": ""
+                }
+            ]
         }
     }
 }

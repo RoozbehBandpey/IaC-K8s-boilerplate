@@ -1,0 +1,97 @@
+# Template pipeline for the AKS Environment Deployment
+# This includes shared infrastructure and n AKS workspaces, compute and
+# their configuration.
+# 
+#
+# :param environment: the environment for deployment e.g. dev
+
+jobs:
+  - job: ValidateSharedInfra
+    variables:
+      - group: mmc-vg-dev
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(ENV)
+      - name: deploymentMode
+        value: 'Validation'
+
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    steps:
+    - task: AzureCLI@1
+      displayName: 'Deployment: Resource Group'
+      inputs:
+        azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+                      az group create -n $(RESOURCE_GROUP_NAME) \
+                      -l $(LOCATION) --tags "CUA GUID"="a28cf980-e132-4e77-836d-f748eb6016ff"
+
+    - template: sharedinfra-recommenderapi-resources.yml
+
+          
+  - deployment: DeploySharedInfra
+    dependsOn: ValidateSharedInfra
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    variables:
+    - group: mmc-vg-dev
+    - name: RESOURCE_GROUP_NAME
+      value: $(BASE_NAME)-rg-$(ENV)
+    - name: deploymentMode
+      value: 'Incremental'
+    - name: rbacCreate
+      value: true
+    pool:
+       vmImage: '${{ parameters.vmImage }}'
+    environment: '${{ parameters.environment }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: sharedinfra-recommenderapi-resources.yml
+  
+  - job: ValidateActionMLInfra
+    variables:
+      - group: mmc-vg-dev
+      - name: PURPOSE
+        value: actionml
+      - name: RESOURCE_GROUP_NAME
+        value: $(BASE_NAME)-rg-$(PURPOSE)-$(ENV)
+      - name: deploymentMode
+        value: 'Validation'
+
+    pool:
+      vmImage: '${{ parameters.vmImage }}'
+    steps:
+    - task: AzureCLI@1
+      displayName: 'Deployment: Resource Group'
+      inputs:
+        azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+                      az group create -n $(RESOURCE_GROUP_NAME) \
+                      -l $(LOCATION) --tags "CUA GUID"="a28cf980-e132-4e77-836d-f748eb6016ff"
+
+    - template: sharedinfra-actionml-resources.yml
+
+          
+  - deployment: DeployActionMLInfra
+    dependsOn: ValidateActionMLInfra
+    condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
+    variables:
+    - group: mmc-vg-dev
+    - name: PURPOSE
+      value: actionml
+    - name: RESOURCE_GROUP_NAME
+      value: $(BASE_NAME)-rg-$(PURPOSE)-$(ENV)
+    - name: deploymentMode
+      value: 'Incremental'
+    - name: rbacCreate
+      value: true
+    pool:
+       vmImage: '${{ parameters.vmImage }}'
+    environment: '${{ parameters.environment }}'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: sharedinfra-actionml-resources.yml
