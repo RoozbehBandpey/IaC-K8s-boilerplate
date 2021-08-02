@@ -1,0 +1,41 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+    "name": {
+      "value": "mmc-sqldb-dev"
+    },
+    "serverName": {
+      "value": "mmc-sqlserver-dev"
+    },
+    "apiVersion": {
+      "value": "2021-02-01-preview"
+    },
+    "regionId": {
+      "value": "koreacentral"
+    },
+    "tags": {
+        "value": {
+            "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+        }
+    },
+    "collation": {
+      "value": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "maxSizeBytes": {
+      "value": 21474836480
+    },
+    "autoPauseDelay": {
+      "value": -1
+    },
+    "minCapacity": {
+      "value": 10
+    },
+    "skuName": {
+      "value": "Standard"
+    },
+    "tier": {
+      "value": "Standard"
+    }
+  }
+}

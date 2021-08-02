@@ -1,0 +1,53 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "String"
+        },
+        "regionId": {
+            "type": "String"
+        },
+        "apiVersion": {
+            "type": "string"
+        },
+        "SkuName": {
+            "type": "string"
+        },
+        "subnetObject": {
+            "type": "object"
+        },
+        "tags": {
+          "type": "object"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "[parameters('apiVersion')]",
+            "name": "[parameters('name')]",
+            "location": "[parameters('regionId')]",
+            "tags": "[parameters('tags')]",
+            "sku": {
+                "name": "[parameters('SkuName')]"
+            },
+            "properties": {                
+                "ipConfigurations": [
+                    {
+                        "name": "IpConf",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('subnetObject').subnet.pip)]"
+                            },                            
+                            "subnet": {
+                                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('subnetObject').subnet.vnetName), '/subnets/', parameters('subnetObject').subnet.name)]"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}

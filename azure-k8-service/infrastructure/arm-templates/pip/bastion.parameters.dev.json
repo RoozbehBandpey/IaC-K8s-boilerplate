@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": { 
+        "name": {
+            "value": "mmc-bastion-pip-dev"
+        },
+        "regionId": {
+            "value": "koreacentral"
+        },
+        "apiVersion": {
+            "value": "2020-11-01"
+        },
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+        },
+        "publicIpSkuName": {
+            "value": "Standard"
+        },
+        "publicIpSkuTier": {
+            "value": "Regional"
+        },
+        "publicIPAllocationMethod": {
+            "value": "Static"
+        },
+        "publicIPAddressVersion": {
+            "value": "IPv4"
+        }
+    }
+}

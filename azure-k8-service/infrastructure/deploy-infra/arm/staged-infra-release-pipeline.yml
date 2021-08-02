@@ -1,0 +1,111 @@
+# Kubernetes Infrastructure Release
+#
+# This pipeline's scope is to validate and deploy infrastructural
+# changes to the microservice environments with kubernetes. This includes:
+#
+# * a stage to publish ARM templates and tests
+# * a stage to deploy and validate the functional working of the
+#   deployed infrastructure in an integration environment
+# * the execution of tests scoped to custom roles in the AAD tenant
+# * the deployment to the microservice environments
+#   * dev
+#   * int
+#   * prod
+#
+# This pipeline is automatically triggered on any change in the arm-templates
+# folder containing this ADO pipeline definition and infra-as-code.
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infrastructure/arm-templates/*
+    - infrastructure/deploy-infra/arm/*
+pr:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - infrastructure/arm-templates/*
+    - infrastructure/deploy-infra/arm/*
+
+# loading all variables groups once, to resolve Azure DevOps problems with resolving variables
+variables:
+- name: productionReady
+  value: false
+- group: mmc-vg-dev
+- group: mmc-vg-int
+- group: mmc-vg-prd
+
+stages:
+# Validate and publish dependencies for downstream stages
+- stage: Build
+  displayName: 'IaC Build'
+  jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: CopyFiles@2
+      displayName: 'Copy Deployment scripts to: $(Build.ArtifactStagingDirectory)'
+      inputs:
+        sourceFolder: 'infrastructure/deployment-scripts'
+        targetFolder: '$(Build.ArtifactStagingDirectory)/scripts'
+    - task: CopyFiles@2
+      displayName: 'Copy ARM templates'
+      inputs:
+        sourceFolder: 'infrastructure/arm-templates'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+    - publish: '$(Pipeline.Workspace)'
+      artifact: IaCAndTests
+
+# Deploy DEV 
+- stage: DeployDevInfra
+  displayName: 'Deploy: DEV'
+  dependsOn: Build
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', false))
+  variables:
+  - group: mmc-vg-dev
+  - name: armArtifactName
+    value: IaCAndTests
+
+  jobs:
+  - template: deployment-steps.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-dev'
+
+# Deploy INT 
+- stage: DeployIntInfra
+  displayName: 'Deploy: INT'
+  dependsOn: DeployDevInfra
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
+  variables:
+  - group: mmc-vg-int
+  - name: armArtifactName
+    value: IaCAndTests
+
+  jobs:
+  - template: deployment-steps.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-int'
+
+# Deploy PRD 
+- stage: DeployPrdInfra
+  displayName: 'Deploy: PRD'
+  dependsOn: DeployIntInfra
+  condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
+  variables:
+  - group: mmc-vg-prd
+  - name: armArtifactName
+    value: IaCAndTests
+
+  jobs:
+  - template: deployment-steps.yml
+    parameters:
+      vmImage: 'ubuntu-latest'
+      environment: 'mmc-env-prd'

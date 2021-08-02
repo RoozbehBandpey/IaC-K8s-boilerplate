@@ -8,9 +8,6 @@
         "regionId": {
             "value": "westeurope"
         },
-        "objectId": {
-            "value": "service_principal_object_id"
-        },
         "createMode": {
             "value": "default"
         },

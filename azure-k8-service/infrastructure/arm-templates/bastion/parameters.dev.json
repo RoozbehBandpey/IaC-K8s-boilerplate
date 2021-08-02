@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "mmc-bastion-dev"
+        },
+        "regionId": {
+            "value": "koreacentral"
+        },
+        "apiVersion": {
+            "value": "2020-11-01"
+        },
+        "SkuName": {
+            "value": "Basic"
+        },
+        "subnetObject": {
+            "value": {
+                "subnet": {
+                        "vnetName": "mmc-vnet-dev",
+                        "name": "AzureBastionSubnet",
+                        "pip": "mmc-bastion-pip-dev"
+                    }
+            }
+        },        
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+        }
+    }
+}

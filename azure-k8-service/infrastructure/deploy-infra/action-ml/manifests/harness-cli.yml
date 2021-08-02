@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harness-cli
+  namespace: harness
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: harness-cli
+  template:
+    metadata:
+      labels:
+        app: harness-cli
+    spec:
+      containers:
+        - name: harness-cli
+          image: mmcacractionmldev.azurecr.io/harness-cli:latest
+          env:
+            - name: HARNESS_EXTERNAL_ADDRESS
+              value: http://harness:9090
+          resources: {}
+          ports:
+            - containerPort: 9092
+      imagePullSecrets:
+        - name: mmc-image-pull-secret-actionml-dev
+      nodeSelector:
+        agentpool: apppool
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: harness-cli
+spec:
+  selector:
+    app: harness-cli
+  ports:
+    - protocol: TCP
+      port: 8080 
+      targetPort: 9092

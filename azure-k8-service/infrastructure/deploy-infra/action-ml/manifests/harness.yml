@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: harness
+  namespace: harness
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: harness
+  template:
+    metadata:
+      labels:
+        app: harness
+    spec:
+      containers:
+        - name: harness
+          image: mmcacractionmldev.azurecr.io/harness:latest
+          env:
+            - name: MONGO_URI
+              value: mongodb://admin:$(MONGODB_ROOT_PASSWORD)@mongodb:27017
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb
+                  key: mongodb-root-password
+            - name: HARNESS_URI
+              value: http://0.0.0.0:9090
+            - name: ELASTICSEARCH_URI
+              value: http://elasticsearch:9200
+          resources: {}
+          ports:
+            - containerPort: 9090
+      imagePullSecrets:
+        - name: mmc-image-pull-secret-actionml-dev
+      nodeSelector:
+        agentpool: apppool
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: harness
+  namespace: harness
+spec:
+  selector:
+    app: harness
+  ports:
+    - protocol: TCP
+      port: 8080 
+      targetPort: 9090
