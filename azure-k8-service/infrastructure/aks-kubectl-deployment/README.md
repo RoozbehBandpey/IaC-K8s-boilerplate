@@ -379,7 +379,7 @@ helm uninstall hbase-1623423839
 
 now let's upgrade habse with new tag
 
-kubectl get pods -l app=care4me.recommenderapi.backend -w
+kubectl get pods -l app=project.recommenderapi.backend -w
 
 
 now let's assign this label and upgrade helm

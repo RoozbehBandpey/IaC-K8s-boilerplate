@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "care4me_rg_prd"
+            "value": "project_rg_prd"
         },
         "regionId": {
             "value": "koreasouth"
@@ -13,7 +13,7 @@
         },
         "createMode": {
             "value": "default"
-        },        
+        },
         "tags": {
             "value": {
                 "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"

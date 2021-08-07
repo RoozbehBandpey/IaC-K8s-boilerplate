@@ -1,6 +1,6 @@
 # Architecture
 
-This architectural design details fine-grained configurations of care4me recommender infrastructures on Azure. This design is focused on microservices on Azure Kubernetes Services of each component that are crucial for the service as a whole. Topics include configuring DevOps build and release pipeline, kubernetes nodepool and pod deployments, and monitoring across a microservicees.
+This architectural design details fine-grained configurations of project recommender infrastructures on Azure. This design is focused on microservices on Azure Kubernetes Services of each component that are crucial for the service as a whole. Topics include configuring DevOps build and release pipeline, kubernetes nodepool and pod deployments, and monitoring across a microservicees.
 
 
 ![AKS design](./diagrams/images/aks_service_mesh-aks-design-v2.png)
@@ -54,8 +54,8 @@ Since the public facing resources are deployed within their own virtual network,
 >INFO: AGIC requires CNI networking to be enabled
 
 
-* The client sends an HTTPS request to the domain name: mercedes.care4me.com
-* Application Gateway has an integrated web application firewall (WAF) and negotiates the TLS handshake for mercedes.care4me.com Application Gateway execute routing rules that forward the traffic to the configured backend. The TLS certificate is stored in Azure Key Vault and it has been made available within cluster via CSI.
+* The client sends an HTTPS request to the domain name: mercedes.project.com
+* Application Gateway has an integrated web application firewall (WAF) and negotiates the TLS handshake for mercedes.project.com Application Gateway execute routing rules that forward the traffic to the configured backend. The TLS certificate is stored in Azure Key Vault and it has been made available within cluster via CSI.
 * The ingress controller receives the encrypted traffic through the AGIC load balancer. The controller forwards the traffic to the workload pods over HTTP. The certificates are stored in Azure Key Vault and mounted into the cluster using the Container Storage Interface (CSI) driver.
 #### Egress
 All egress traffic from the cluster moves through Azure Firewall. Azure Firewall decides whether to block or allow the egress traffic. That decision is based on the specific rules defined in the Azure Firewall or the built-in threat intelligence rules.

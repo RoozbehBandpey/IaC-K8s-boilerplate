@@ -1,4 +1,4 @@
-# care4me recommender infrastructure deployments
+# project recommender infrastructure deployments
 
 Under the name recommendation engine infrastructure, we refer to all Azure resources
 that are span up to facilitate facilitate Action ML recommendation engine. This includes lower-level
