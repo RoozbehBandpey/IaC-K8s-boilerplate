@@ -7,8 +7,8 @@ To have a clean overview of what is being provisioned under the hood, we create 
 group and and create our Kubernetes cluster within it:
 
 ```shell
-az group create --name mmc-dev --location koreacentral
-az aks create --resource-group mmc-dev --name mmc-kubernetescluster-dev --enable-managed-identity --generate-ssh-keys --kubernetes-version 1.19.7
+az group create --name project-dev --location koreacentral
+az aks create --resource-group project-dev --name project-kubernetescluster-dev --enable-managed-identity --generate-ssh-keys --kubernetes-version 1.19.7
 ```
 
 Let's inspect the created resources:
@@ -16,7 +16,7 @@ Let's inspect the created resources:
 ![Created resource groups](./images/rg-created.png)
 
 The `az aks create` command created a second resource group named
-`MC_mmc-dev_mmc-kubernetescluster-dev_koreacentral` containing all resources provisioned for our AKS
+`MC_project-dev_project-kubernetescluster-dev_koreacentral` containing all resources provisioned for our AKS
 cluster:
 
 ![Resource group with AKS resource](./images/cluster-rg.png)
@@ -33,7 +33,7 @@ All other resource for the cluster are created in its own resource group.
 ## Get the existing cluster
 
 ```shell
-az aks show --resource-group mmc-dev --name mmc-kubernetescluster-dev
+az aks show --resource-group project-dev --name project-kubernetescluster-dev
 ```
 Output:
 ```json
@@ -80,11 +80,11 @@ Output:
     "authorizedIpRanges": null,
     "enablePrivateCluster": false
   },
-  "dnsPrefix": "mmc-kubernetescluster-dev-dns",
+  "dnsPrefix": "project-kubernetescluster-dev-dns",
   "enablePodSecurityPolicy": null,
   "enableRbac": true,
-  "fqdn": "mmc-kubernetescluster-dev-dns-f8bff25b.hcp.koreacentral.azmk8s.io",
-  "id": "/subscriptions/e292ee2b-5d91-49e2-9c54-fc1d9f44251f/resourcegroups/mmc-dev/providers/Microsoft.ContainerService/managedClusters/mmc-kubernetescluster-dev",
+  "fqdn": "project-kubernetescluster-dev-dns-f8bff25b.hcp.koreacentral.azmk8s.io",
+  "id": "/subscriptions/e292ee2b-5d91-49e2-9c54-fc1d9f44251f/resourcegroups/project-dev/providers/Microsoft.ContainerService/managedClusters/project-kubernetescluster-dev",
   "identity": {
     "principalId": "a2a70a39-9c01-40ba-b626-1e1ba7d17fa1",
     "tenantId": "9652d7c2-1ccf-4940-8151-4a92bd474ed0",
@@ -94,15 +94,15 @@ Output:
   "linuxProfile": null,
   "location": "koreacentral",
   "maxAgentPools": 100,
-  "name": "mmc-kubernetescluster-dev",
+  "name": "project-kubernetescluster-dev",
   "networkProfile": {
     "dnsServiceIp": "10.0.0.10",
     "dockerBridgeCidr": "172.17.0.1/16",
     "loadBalancerProfile": {
       "effectiveOutboundIps": [
         {
-          "id": "/subscriptions/e292ee2b-5d91-49e2-9c54-fc1d9f44251f/resourceGroups/MC_mmc-dev_mmc-kubernetescluster-dev_koreacentral/providers/Microsoft.Network/publicIPAddresses/39c5db0c-a743-4936-af44-2b4261101822",
-          "resourceGroup": "MC_mmc-dev_mmc-kubernetescluster-dev_koreacentral"
+          "id": "/subscriptions/e292ee2b-5d91-49e2-9c54-fc1d9f44251f/resourceGroups/MC_project-dev_project-kubernetescluster-dev_koreacentral/providers/Microsoft.Network/publicIPAddresses/39c5db0c-a743-4936-af44-2b4261101822",
+          "resourceGroup": "MC_project-dev_project-kubernetescluster-dev_koreacentral"
         }
       ],
       "managedOutboundIps": {
@@ -117,9 +117,9 @@ Output:
     "podCidr": "10.244.0.0/16",
     "serviceCidr": "10.0.0.0/16"
   },
-  "nodeResourceGroup": "MC_mmc-dev_mmc-kubernetescluster-dev_koreacentral",
+  "nodeResourceGroup": "MC_project-dev_project-kubernetescluster-dev_koreacentral",
   "provisioningState": "Succeeded",
-  "resourceGroup": "mmc-dev",
+  "resourceGroup": "project-dev",
   "servicePrincipalProfile": {
     "clientId": "msi"
   },
@@ -142,8 +142,8 @@ certificates_ and _access tokens_.
 To obtain these access credentials for our newly created cluster we
 use the `az aks get-credentials` command:
 ```shell
-$ az aks get-credentials --resource-group mmc-dev --name mmc-kubernetescluster-dev
-Merged "mmc-kubernetescluster-dev" as current context in C:\Users\r.bandpey\.kube\config
+$ az aks get-credentials --resource-group project-dev --name project-kubernetescluster-dev
+Merged "project-kubernetescluster-dev" as current context in C:\Users\r.bandpey\.kube\config
 
 $ kubectl version # check client and server version of kubernetes
 Client Version: version.Info{Major:"1", Minor:"20", GitVersion:"v1.20.2", GitCommit:"faecb196815e248d3ecfb03c680a4507229c2a56", GireeState:"clean", BuildDate:"2021-01-13T13:28:09Z", GoVersion:"go1.15.5", Compiler:"gc", Platform:"windows/amd64"}
@@ -280,11 +280,11 @@ kubectl delete daemonset --all
 ## Azure Container Registry Deployment
 In order to be able to store the custom Docker images we need a _container registry_. 
 ```shell
-$ az acr create --name mmcacrdev --resource-group mmc-dev --sku basic --admin-enabled
+$ az acr create --name projectacrdev --resource-group project-dev --sku basic --admin-enabled
 
 # now let's attach the container registry to the cluster
 
-$ az aks update --resource-group mmc-dev --name mmc-kubernetescluster-dev --attach-acr mmcacrdev
+$ az aks update --resource-group project-dev --name project-kubernetescluster-dev --attach-acr projectacrdev
 ```
 
 ## Build a Custom Image
@@ -292,7 +292,7 @@ $ az aks update --resource-group mmc-dev --name mmc-kubernetescluster-dev --atta
 First, let's build the recommender API Docker image
 Clone the codebase:
 ```shell
-git clone https://daimler.visualstudio.com/DefaultCollection/Mercedes%20me%20Care/_git/MCS%20Recommendation%20Platform
+git clone https://com.visualstudio.com/DefaultCollection/Mercedes%20me%20Care/_git/MCS%20Recommendation%20Platform
 ```
 **Modify Docker compose file**: Open docker-compose.yaml in a text editor. The file configures the `mscrpadmin` and `mscrpopenapi` services.
 
@@ -315,7 +315,7 @@ services:
     ports: 
         - "5001:5001"
 ```
-Update the image property in the both services. Prefix the image name with the login server name of your Azure container registry, `mmcacrdev.azurecr.io`
+Update the image property in the both services. Prefix the image name with the login server name of your Azure container registry, `projectacrdev.azurecr.io`
 
 It should look like the following:
 ```yml
@@ -323,14 +323,14 @@ version: '3.4'
 
 services:
   mscrpadmin:
-    image: mmcacrdev.azurecr.io/mscrpadmin
+    image: projectacrdev.azurecr.io/mscrpadmin
     build:
       context: .
       dockerfile: ./Dockerfile.admin
     ports: 
       - "5002:5002"
   mscrpopenapi:
-    image: mmcacrdev.azurecr.io/mscrpopenapi
+    image: projectacrdev.azurecr.io/mscrpopenapi
     build:
       context: .
       dockerfile: ./Dockerfile.openapi
@@ -345,18 +345,18 @@ docker-compose up --build -d
 To be able to interact with our registry, we first need to login.
 
 ```shell
-ACRPWD=$(az acr credential show -n mmcacrdev --query "passwords[0].value" -o tsv)
-docker login mmcacrdev.azurecr.io -u mmcacrdev -p $ACRPWD
+ACRPWD=$(az acr credential show -n projectacrdev --query "passwords[0].value" -o tsv)
+docker login projectacrdev.azurecr.io -u projectacrdev -p $ACRPWD
 ```
 
 Might be nessacary
 ```
-kubectl create secret docker-registry acrsecrets --docker-server=mmcacrdev.azurecr.io --docker-username=mmcacrdev --docker-password=$ACRPWD
+kubectl create secret docker-registry acrsecrets --docker-server=projectacrdev.azurecr.io --docker-username=projectacrdev --docker-password=$ACRPWD
 ```
 
 ```
-az acr build --image adminapi:v1 --registry mmcacrdev --file Dockerfile.admin .
-az acr build --image openapi:v1 --registry mmcacrdev --file Dockerfile.openapi .
+az acr build --image adminapi:v1 --registry projectacrdev --file Dockerfile.admin .
+az acr build --image openapi:v1 --registry projectacrdev --file Dockerfile.openapi .
 ```
 
 

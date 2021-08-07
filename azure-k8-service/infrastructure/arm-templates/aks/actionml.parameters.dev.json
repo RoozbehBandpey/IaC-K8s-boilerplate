@@ -1,97 +1,97 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "name": {
-      "value": "cluster-name"
-    },
-    "systemAgentPool": {
-      "value": {
-        "name": "agentpool",
-        "nodeCount": 3,
-        "vmSize": "Standard_DS2_v2",
-        "osDiskSizeGB": 128,
-        "osDiskType": "Managed",
-        "kubeletDiskType": "OS",
-        "maxPods": 110,
-        "type": "VirtualMachineScaleSets",
-        "nodeLabels": {},
-        "mode": "System",
-        "osType": "Linux",
-        "osSKU": "Ubuntu"
-      }
-    },
-    "userAgentPool": {
-      "value": {
-        "name": "apppool",
-        "nodeCount": 4,
-        "vmSize": "Standard_DS2_v2",
-        "osDiskSizeGB": 128,
-        "osDiskType": "Managed",
-        "kubeletDiskType": "OS",
-        "maxPods": 110,
-        "type": "VirtualMachineScaleSets",
-        "nodeLabels": {},
-        "mode": "User",
-        "osType": "Linux",
-        "osSKU": "Ubuntu"
-      }
-    },
-    "kubernetesVersion": {
-      "value": "1.19.11"
-    },
-    "apiVersion": {
-      "value": "2021-05-01"
-    },
-    "subnetObject": {
-      "value": {
-        "subnet": {
-          "vnetName": "mmc-vnet-actionml-dev",
-          "name": "mmc-sn-dev-actionml-aks"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "cluster-name"
+        },
+        "systemAgentPool": {
+            "value": {
+                "name": "agentpool",
+                "nodeCount": 3,
+                "vmSize": "Standard_DS2_v2",
+                "osDiskSizeGB": 128,
+                "osDiskType": "Managed",
+                "kubeletDiskType": "OS",
+                "maxPods": 110,
+                "type": "VirtualMachineScaleSets",
+                "nodeLabels": {},
+                "mode": "System",
+                "osType": "Linux",
+                "osSKU": "Ubuntu"
+            }
+        },
+        "userAgentPool": {
+            "value": {
+                "name": "apppool",
+                "nodeCount": 4,
+                "vmSize": "Standard_DS2_v2",
+                "osDiskSizeGB": 128,
+                "osDiskType": "Managed",
+                "kubeletDiskType": "OS",
+                "maxPods": 110,
+                "type": "VirtualMachineScaleSets",
+                "nodeLabels": {},
+                "mode": "User",
+                "osType": "Linux",
+                "osSKU": "Ubuntu"
+            }
+        },
+        "kubernetesVersion": {
+            "value": "1.19.11"
+        },
+        "apiVersion": {
+            "value": "2021-05-01"
+        },
+        "subnetObject": {
+            "value": {
+                "subnet": {
+                    "vnetName": "project-vnet-actionml-dev",
+                    "name": "project-sn-dev-actionml-aks"
+                }
+            }
+        },
+        "publicIPAddress": {
+            "value": "project-aks-pip-actionml-dev"
+        },
+        "logAnalyticsWorkspace": {
+            "value": "log-analytics-workspace-name"
+        },
+        "regionId": {
+            "value": "koreacentral"
+        },
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
+        },
+        "serviceCidr": {
+            "value": "172.18.0.0/17"
+        },
+        "dnsServiceIP": {
+            "value": "172.18.0.10"
+        },
+        "dockerBridgeCidr": {
+            "value": "172.17.0.1/16"
+        },
+        "aadProfile": {
+            "value": {
+                "managed": true,
+                "adminGroupObjectIds": ["30ad5c06-87f4-4aa9-92e4-c4714ad3828b"],
+                "tenantID": ""
+            }
+        },
+        "enableRBAC": {
+            "value": true
+        },
+        "enableHttpApplicationRouting": {
+            "value": false
+        },
+        "linuxAdminUsername": {
+            "value": "projectaksdevadmin"
+        },
+        "sshRSAPublicKey": {
+            "value": "GEN"
         }
-      }
-    },
-    "publicIPAddress": {
-      "value": "mmc-aks-pip-actionml-dev"
-    },
-    "logAnalyticsWorkspace": {
-      "value": "log-analytics-workspace-name"
-    },
-    "regionId": {
-      "value": "koreacentral"
-    },
-    "tags": {
-      "value": {
-        "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
-      }
-    },
-    "serviceCidr": {
-      "value": "172.18.0.0/17"
-    },
-    "dnsServiceIP": {
-      "value": "172.18.0.10"
-    },
-    "dockerBridgeCidr": {
-      "value": "172.17.0.1/16"
-    },
-    "aadProfile": {
-      "value": {
-        "managed": true,
-        "adminGroupObjectIds": ["30ad5c06-87f4-4aa9-92e4-c4714ad3828b"],
-        "tenantID": ""
-      }
-    },
-    "enableRBAC": {
-      "value": true
-    },
-    "enableHttpApplicationRouting": {
-      "value": false
-    },
-    "linuxAdminUsername": {
-      "value": "mmcaksdevadmin"
-    },
-    "sshRSAPublicKey": {
-      "value": "GEN"
     }
-  }
 }

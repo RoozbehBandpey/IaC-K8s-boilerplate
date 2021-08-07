@@ -8,7 +8,7 @@
 jobs:
   - deployment: DeployK8sInfra
     variables:
-      - group: mmc-vg-dev
+      - group: project-vg-dev
       - name: RESOURCE_GROUP_NAME
         value: $(BASE_NAME)-rg-$(ENV)
       - name: AKS_NAME
@@ -16,7 +16,7 @@ jobs:
       - name: deploymentMode
         value: 'Validation'
       - name: imagePullSecret
-        value: '$(BASE_NAME)-image-pull-secret-$(ENV)' #imagePullSecret is created in https://daimler.visualstudio.com/Mercedes%20me%20Care/_build?definitionId=13159&_a=summary
+        value: '$(BASE_NAME)-image-pull-secret-$(ENV)' #imagePullSecret is created in https://com.visualstudio.com/Mercedes%20me%20Care/_build?definitionId=13159&_a=summary
       - name: serviceNamespace
         value: recommender-api
       - name: ingressNamespace
@@ -110,7 +110,7 @@ jobs:
           #     azureSubscription: $(AZURE_RM_SVC_CONNECTION)
           #     scriptLocation: 'inlineScript'
           #     inlineScript: |
-          #                   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out aks-ingress-tls.crt -keyout aks-ingress-tls.key -subj "/CN=mmc-aks-dev-dns-48b692a2.hcp.koreacentral.azmk8s.io/O=aks-ingress-tls"
+          #                   openssl req -x509 -nodes -days 365 -newkey rsa:2048 -out aks-ingress-tls.crt -keyout aks-ingress-tls.key -subj "/CN=project-aks-dev-dns-48b692a2.hcp.koreacentral.azmk8s.io/O=aks-ingress-tls"
           #                   kubectl create secret tls aks-ingress-tls \
           #                     --namespace $(ingressNamespace) \
           #                     --key aks-ingress-tls.key \

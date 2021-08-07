@@ -8,7 +8,7 @@
 jobs:
   - job: ValidateSharedInfra
     variables:
-      - group: mmc-vg-dev
+      - group: project-vg-dev
       - name: RESOURCE_GROUP_NAME
         value: $(BASE_NAME)-rg-$(ENV)
       - name: deploymentMode
@@ -33,7 +33,7 @@ jobs:
     dependsOn: ValidateSharedInfra
     condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
     variables:
-    - group: mmc-vg-dev
+    - group: project-vg-dev
     - name: RESOURCE_GROUP_NAME
       value: $(BASE_NAME)-rg-$(ENV)
     - name: deploymentMode
@@ -51,7 +51,7 @@ jobs:
   
   - job: ValidateActionMLInfra
     variables:
-      - group: mmc-vg-dev
+      - group: project-vg-dev
       - name: PURPOSE
         value: actionml
       - name: RESOURCE_GROUP_NAME
@@ -78,7 +78,7 @@ jobs:
     dependsOn: ValidateActionMLInfra
     condition: eq(variables['build.sourceBranch'], 'refs/heads/master')
     variables:
-    - group: mmc-vg-dev
+    - group: project-vg-dev
     - name: PURPOSE
       value: actionml
     - name: RESOURCE_GROUP_NAME

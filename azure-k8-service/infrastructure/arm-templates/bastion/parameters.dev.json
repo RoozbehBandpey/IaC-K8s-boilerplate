@@ -3,7 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "value": "mmc-bastion-dev"
+            "value": "project-bastion-dev"
         },
         "regionId": {
             "value": "koreacentral"
@@ -17,12 +17,12 @@
         "subnetObject": {
             "value": {
                 "subnet": {
-                        "vnetName": "mmc-vnet-dev",
-                        "name": "AzureBastionSubnet",
-                        "pip": "mmc-bastion-pip-dev"
-                    }
+                    "vnetName": "project-vnet-dev",
+                    "name": "AzureBastionSubnet",
+                    "pip": "project-bastion-pip-dev"
+                }
             }
-        },        
+        },
         "tags": {
             "value": {
                 "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"

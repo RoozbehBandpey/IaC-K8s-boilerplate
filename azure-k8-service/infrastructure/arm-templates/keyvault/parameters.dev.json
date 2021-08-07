@@ -8,23 +8,23 @@
         "regionId": {
             "value": "koreacentral"
         },
-		"apiVersion": {
-            "value":"2020-04-01-preview"
+        "apiVersion": {
+            "value": "2020-04-01-preview"
         },
         "createMode": {
             "value": "default"
         },
-		"tags": {
-			 "value": {
-                 "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
             }
-		},
+        },
         "subnetObject": {
             "value": {
                 "subnet": {
-                        "vnetName": "mmc-vnet-dev",
-                        "name": "mmc-sn-dev-aks"
-                    }
+                    "vnetName": "project-vnet-dev",
+                    "name": "project-sn-dev-aks"
+                }
             }
         },
         "sku": {
@@ -33,9 +33,8 @@
                 "name": "standard"
             }
         },
-		"accessPolicies": {
-            "value": [
-                {
+        "accessPolicies": {
+            "value": [{
                     "objectId": "5a06e4db-63d1-454d-9890-986696caaed4",
                     "tenantId": "9652d7c2-1ccf-4940-8151-4a92bd474ed0",
                     "permissions": {

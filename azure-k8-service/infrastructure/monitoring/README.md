@@ -16,16 +16,16 @@ Prometheus supports following concepts:
 Latest Prometheus is available as a docker image in its official docker hub account. We will use that, but from our own registry.
 
 ```shell
-az acr credential show -n mmcacrdev --query "passwords[0].value" -o tsv
-docker login mmcacrdev.azurecr.io -u mmcacrdev -p
+az acr credential show -n projectacrdev --query "passwords[0].value" -o tsv
+docker login projectacrdev.azurecr.io -u projectacrdev -p
 docker pull prom/prometheus
 
-docker tag prom/prometheus mmcacrdev.azurecr.io/prometheus:v1
+docker tag prom/prometheus projectacrdev.azurecr.io/prometheus:v1
 
-docker push mmcacrdev.azurecr.io/prometheus:v1
+docker push projectacrdev.azurecr.io/prometheus:v1
 ```
  
-Now `Prometheus` image is available from `mmcacrdev.azurecr.io/prometheus:v1`
+Now `Prometheus` image is available from `projectacrdev.azurecr.io/prometheus:v1`
  
 ### Create a Namespace & ClusterRole
 Create a Kubernetes namespace for all our monitoring components

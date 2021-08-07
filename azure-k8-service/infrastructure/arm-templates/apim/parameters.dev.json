@@ -1,85 +1,85 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "location": {
-      "value": "koreacentral"
-    },
-    "name": {
-      "value": "mmc-apim-dev"
-    },
-    "organizationName": {
-      "value": "GB72_Sub_RecEngine_Test"
-    },
-    "adminEmail": {
-      "value": "dw_096-apu_gb7-cstx@daimler.com"
-    },
-    "tier": {
-      "value": "Developer"
-    },
-    "appInsightsOption": {
-      "value": true
-    },
-    "appInsightsObject": {
-      "value": {
-        "name": "mmc-appinsights-dev"
-      }
-    },
-    "capacity": {
-      "value": ""
-    },
-    "identity": {
-      "value": {
-        "type": "SystemAssigned"
-      }
-    },
-    "virtualNetworkType": {
-      "value": "External"
-    },
-    "vnet": {
-      "value": {
-        "name": "mmc-vnet-dev",
-        "resourceGroup": "mmc-rg-dev",
-        "addressPrefixes": ["172.16.0.0/17"],
-        "addressPrefix": "172.16.0.0/17",
-        "newOrExisting": "existing",
-        "subnets": {
-          "subnet": {
-            "name": "mmc-sn-dev-public-facing",
-            "addressPrefix": "172.16.32.0/24",
-            "startAddress": "172.16.32.4"
-          }
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "koreacentral"
+        },
+        "name": {
+            "value": "project-apim-dev"
+        },
+        "organizationName": {
+            "value": "GB72_Sub_RecEngine_Test"
+        },
+        "adminEmail": {
+            "value": "dw_096-apu_gb7-cstx@com.com"
+        },
+        "tier": {
+            "value": "Developer"
+        },
+        "appInsightsOption": {
+            "value": true
+        },
+        "appInsightsObject": {
+            "value": {
+                "name": "project-appinsights-dev"
+            }
+        },
+        "capacity": {
+            "value": ""
+        },
+        "identity": {
+            "value": {
+                "type": "SystemAssigned"
+            }
+        },
+        "virtualNetworkType": {
+            "value": "External"
+        },
+        "vnet": {
+            "value": {
+                "name": "project-vnet-dev",
+                "resourceGroup": "project-rg-dev",
+                "addressPrefixes": ["172.16.0.0/17"],
+                "addressPrefix": "172.16.0.0/17",
+                "newOrExisting": "existing",
+                "subnets": {
+                    "subnet": {
+                        "name": "project-sn-dev-public-facing",
+                        "addressPrefix": "172.16.32.0/24",
+                        "startAddress": "172.16.32.4"
+                    }
+                }
+            }
+        },
+        "tripleDES": {
+            "value": false
+        },
+        "http2": {
+            "value": false
+        },
+        "clientTls11": {
+            "value": false
+        },
+        "clientTls10": {
+            "value": false
+        },
+        "clientSsl30": {
+            "value": false
+        },
+        "backendTls11": {
+            "value": false
+        },
+        "backendTls10": {
+            "value": false
+        },
+        "backendSsl30": {
+            "value": false
+        },
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
         }
-      }
-    },
-    "tripleDES": {
-      "value": false
-    },
-    "http2": {
-      "value": false
-    },
-    "clientTls11": {
-      "value": false
-    },
-    "clientTls10": {
-      "value": false
-    },
-    "clientSsl30": {
-      "value": false
-    },
-    "backendTls11": {
-      "value": false
-    },
-    "backendTls10": {
-      "value": false
-    },
-    "backendSsl30": {
-      "value": false
-    },
-    "tags": {
-      "value": {
-        "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
-      }
     }
-  }
 }

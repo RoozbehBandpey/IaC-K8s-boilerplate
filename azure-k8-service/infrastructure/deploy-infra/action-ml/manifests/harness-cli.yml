@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: harness-cli
-          image: mmcacractionmldev.azurecr.io/harness-cli:latest
+          image: projectacractionmldev.azurecr.io/harness-cli:latest
           env:
             - name: HARNESS_EXTERNAL_ADDRESS
               value: http://harness:9090
@@ -23,7 +23,7 @@ spec:
           ports:
             - containerPort: 9092
       imagePullSecrets:
-        - name: mmc-image-pull-secret-actionml-dev
+        - name: project-image-pull-secret-actionml-dev
       nodeSelector:
         agentpool: apppool
 ---

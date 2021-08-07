@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: harness
-          image: mmcacractionmldev.azurecr.io/harness:latest
+          image: projectacractionmldev.azurecr.io/harness:latest
           env:
             - name: MONGO_URI
               value: mongodb://admin:$(MONGODB_ROOT_PASSWORD)@mongodb:27017
@@ -32,7 +32,7 @@ spec:
           ports:
             - containerPort: 9090
       imagePullSecrets:
-        - name: mmc-image-pull-secret-actionml-dev
+        - name: project-image-pull-secret-actionml-dev
       nodeSelector:
         agentpool: apppool
 ---

@@ -8,7 +8,7 @@
 jobs:
   - deployment: DeployK8sInfra
     variables:
-      - group: mmc-vg-dev
+      - group: project-vg-dev
       - name: RESOURCE_GROUP_NAME
         value: $(BASE_NAME)-rg-$(PURPOSE)-$(ENV)
       - name: PURPOSE
@@ -120,7 +120,7 @@ jobs:
             displayName: Login to ACR
             inputs:
               command: login
-              containerRegistry: mmc-svc-actionml-docker
+              containerRegistry: project-svc-actionml-docker
 
 
           - task: AzureCLI@1

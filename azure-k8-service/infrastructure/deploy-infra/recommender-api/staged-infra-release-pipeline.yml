@@ -38,9 +38,9 @@ variables:
   value: false
 - name: artifactName
   value: recommender-api
-- group: mmc-vg-dev
-- group: mmc-vg-int
-- group: mmc-vg-prd
+- group: project-vg-dev
+- group: project-vg-int
+- group: project-vg-prd
 
 stages:
 # Validate and publish dependencies for downstream stages
@@ -70,13 +70,13 @@ stages:
   dependsOn: Build
   condition: and(succeeded(), eq('${{ variables.productionReady }}', false))
   variables:
-  - group: mmc-vg-dev
+  - group: project-vg-dev
 
   jobs:
   - template: cluster-deployment.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-dev'
+      environment: 'project-env-dev'
 
 # Deploy INT 
 - stage: DeployIntCluster
@@ -84,13 +84,13 @@ stages:
   dependsOn: DeployDevCluster
   condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
   variables:
-  - group: mmc-vg-int
+  - group: project-vg-int
 
   jobs:
   - template: cluster-deployment.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-int'
+      environment: 'project-env-int'
 
 # Deploy PRD 
 - stage: DeployPrdCluster
@@ -98,10 +98,10 @@ stages:
   dependsOn: DeployIntCluster
   condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
   variables:
-  - group: mmc-vg-prd
+  - group: project-vg-prd
 
   jobs:
   - template: cluster-deployment.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-prd'
+      environment: 'project-env-prd'

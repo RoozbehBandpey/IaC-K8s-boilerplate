@@ -17,7 +17,7 @@ keyVaultName=$1
 ##### This is the known secret which we request from the key vault #####
 ########################################################################
 
-knownSecret="instrumentationkeymmc-appinsights-dev"
+knownSecret="instrumentationkeyproject-appinsights-dev"
 
 echo "Attempting to get value for known secret from key vault: '$keyVaultName'"
 

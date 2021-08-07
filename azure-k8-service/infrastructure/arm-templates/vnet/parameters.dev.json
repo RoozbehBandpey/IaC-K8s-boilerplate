@@ -1,93 +1,92 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "name": {
-      "value": "vnetname"
-    },
-    "regionId": {
-      "value": "koreacentral"
-    },
-    "apiVersion": {
-      "value": "2020-11-01"
-    },
-    "tags": {
-      "value": {
-        "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
-      }
-    },
-    "existingServicePrincipalObjectId": {
-      "value": "GEN-GUID"
-    },
-    "aksNetworkSecurityGroupName": {
-      "value": "aks-nsg-name"
-    },
-    "aksRouteTableName": {
-      "value": "aks-routetable-name"
-    },
-    "aksSubnet": {
-      "value": {
-        "name": "mmc-sn-dev-aks",
-        "addressPrefix": "172.16.0.0/19",
-        "privateEndpointNetworkPolicies": "Enabled",
-        "privateLinkServiceNetworkPolicies": "Enabled"
-      }
-    },
-    "publicFacingSubnet": {
-      "value": {
-        "name": "mmc-sn-dev-public-facing",
-        "addressPrefix": "172.16.32.0/24",
-        "privateEndpointNetworkPolicies": "Enabled",
-        "privateLinkServiceNetworkPolicies": "Enabled"
-      }
-    },
-    "bastionSubnet": {
-      "value": {
-        "name": "AzureBastionSubnet",
-        "addressPrefix": "172.16.33.0/25",
-        "privateEndpointNetworkPolicies": "Enabled",
-        "privateLinkServiceNetworkPolicies": "Enabled"
-      }
-    },
-    "reservedSubnet": {
-      "value": {
-        "name": "mmc-sn-dev-reserved",
-        "addressPrefix": "172.16.33.128/25",
-        "privateEndpointNetworkPolicies": "Enabled",
-        "privateLinkServiceNetworkPolicies": "Enabled"
-      }
-    },
-    "serviceEndpoints": {
-      "value": [
-        {
-          "service": "Microsoft.KeyVault",
-          "locations": ["*"]
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "vnetname"
         },
-        {
-          "service": "Microsoft.Web",
-          "locations": ["*"]
+        "regionId": {
+            "value": "koreacentral"
         },
-        {
-          "service": "Microsoft.ContainerRegistry",
-          "locations": ["*"]
+        "apiVersion": {
+            "value": "2020-11-01"
         },
-        {
-          "service": "Microsoft.Storage",
-          "locations": ["*"]
+        "tags": {
+            "value": {
+                "CUA GUID": "a28cf980-e132-4e77-836d-f748eb6016ff"
+            }
         },
-        {
-          "service": "Microsoft.Sql",
-          "locations": ["*"]
+        "existingServicePrincipalObjectId": {
+            "value": "GEN-GUID"
         },
-        {
-          "service": "Microsoft.AzureCosmosDB",
-          "locations": ["*"]
+        "aksNetworkSecurityGroupName": {
+            "value": "aks-nsg-name"
         },
-        {
-          "service": "Microsoft.AzureActiveDirectory",
-          "locations": ["*"]
+        "aksRouteTableName": {
+            "value": "aks-routetable-name"
+        },
+        "aksSubnet": {
+            "value": {
+                "name": "project-sn-dev-aks",
+                "addressPrefix": "172.16.0.0/19",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        "publicFacingSubnet": {
+            "value": {
+                "name": "project-sn-dev-public-facing",
+                "addressPrefix": "172.16.32.0/24",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        "bastionSubnet": {
+            "value": {
+                "name": "AzureBastionSubnet",
+                "addressPrefix": "172.16.33.0/25",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        "reservedSubnet": {
+            "value": {
+                "name": "project-sn-dev-reserved",
+                "addressPrefix": "172.16.33.128/25",
+                "privateEndpointNetworkPolicies": "Enabled",
+                "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+        },
+        "serviceEndpoints": {
+            "value": [{
+                    "service": "Microsoft.KeyVault",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.Web",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.ContainerRegistry",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.Storage",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.Sql",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.AzureCosmosDB",
+                    "locations": ["*"]
+                },
+                {
+                    "service": "Microsoft.AzureActiveDirectory",
+                    "locations": ["*"]
+                }
+            ]
         }
-      ]
     }
-  }
 }

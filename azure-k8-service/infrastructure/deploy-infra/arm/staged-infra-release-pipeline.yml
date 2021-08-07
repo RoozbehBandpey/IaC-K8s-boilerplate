@@ -36,9 +36,9 @@ pr:
 variables:
 - name: productionReady
   value: false
-- group: mmc-vg-dev
-- group: mmc-vg-int
-- group: mmc-vg-prd
+- group: project-vg-dev
+- group: project-vg-int
+- group: project-vg-prd
 
 stages:
 # Validate and publish dependencies for downstream stages
@@ -68,7 +68,7 @@ stages:
   dependsOn: Build
   condition: and(succeeded(), eq('${{ variables.productionReady }}', false))
   variables:
-  - group: mmc-vg-dev
+  - group: project-vg-dev
   - name: armArtifactName
     value: IaCAndTests
 
@@ -76,7 +76,7 @@ stages:
   - template: deployment-steps.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-dev'
+      environment: 'project-env-dev'
 
 # Deploy INT 
 - stage: DeployIntInfra
@@ -84,7 +84,7 @@ stages:
   dependsOn: DeployDevInfra
   condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
   variables:
-  - group: mmc-vg-int
+  - group: project-vg-int
   - name: armArtifactName
     value: IaCAndTests
 
@@ -92,7 +92,7 @@ stages:
   - template: deployment-steps.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-int'
+      environment: 'project-env-int'
 
 # Deploy PRD 
 - stage: DeployPrdInfra
@@ -100,7 +100,7 @@ stages:
   dependsOn: DeployIntInfra
   condition: and(succeeded(), eq('${{ variables.productionReady }}', true))
   variables:
-  - group: mmc-vg-prd
+  - group: project-vg-prd
   - name: armArtifactName
     value: IaCAndTests
 
@@ -108,4 +108,4 @@ stages:
   - template: deployment-steps.yml
     parameters:
       vmImage: 'ubuntu-latest'
-      environment: 'mmc-env-prd'
+      environment: 'project-env-prd'

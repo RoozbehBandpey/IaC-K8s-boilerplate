@@ -13,7 +13,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: 'true'
 spec:
   rules:
-    - host: 52-231-52-28.nip.io # this should be replaced with Daimler DOMAIN
+    - host: 52-231-52-28.nip.io # this should be replaced with com DOMAIN
       http:
         paths:
           - path: /api/contacts(\/|$)(.*)

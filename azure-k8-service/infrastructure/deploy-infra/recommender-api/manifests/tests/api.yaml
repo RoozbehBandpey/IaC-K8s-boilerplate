@@ -21,7 +21,7 @@ spec:
                 secretKeyRef:
                   name: sqlsecrets
                   key: constr
-          image: mmcacrdev.azurecr.io/adc-api-sql:1.0
+          image: projectacrdev.azurecr.io/adc-api-sql:1.0
           resources:
             limits:
               memory: '128Mi'
@@ -29,7 +29,7 @@ spec:
           ports:
             - containerPort: 5000
       imagePullSecrets:
-        - name: mmc-image-pull-secret-dev
+        - name: project-image-pull-secret-dev
       nodeSelector:
         agentpool: apppool
 ---

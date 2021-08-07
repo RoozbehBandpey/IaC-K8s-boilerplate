@@ -1,175 +1,173 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {
-    "name": {
-      "defaultValue": "mmc-aks-nodepool-routetable-dev",
-      "type": "String"
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "defaultValue": "project-aks-nodepool-routetable-dev",
+            "type": "String"
+        },
+        "regionId": {
+            "type": "String"
+        },
+        "tags": {
+            "type": "object"
+        }
     },
-    "regionId": {
-      "type": "String"
-    },
-    "tags": {
-      "type": "object"
+    "variables": {},
+    "resources": [{
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('name')]",
+            "location": "[parameters('regionId')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "disableBgpRoutePropagation": false,
+                "routes": [{
+                        "name": "project-aks-agentpool-vmss000",
+                        "properties": {
+                            "addressPrefix": "172.20.0.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.4",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "project-aks-agentpool-vmss001",
+                        "properties": {
+                            "addressPrefix": "172.20.1.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.5",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "project-aks-agentpool-vmss002",
+                        "properties": {
+                            "addressPrefix": "172.20.2.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.6",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "project-aks-apppool-vmss000",
+                        "properties": {
+                            "addressPrefix": "172.20.3.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.7",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "project-aks-apppool-vmss001",
+                        "properties": {
+                            "addressPrefix": "172.20.4.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.8",
+                            "hasBgpOverride": false
+                        }
+                    },
+                    {
+                        "name": "project-aks-apppool-vmss002",
+                        "properties": {
+                            "addressPrefix": "172.20.5.0/24",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "172.16.0.9",
+                            "hasBgpOverride": false
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-agentpool-vmss000')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.0.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.4",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-agentpool-vmss001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.1.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.5",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-agentpool-vmss002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.2.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.6",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-apppool-vmss000')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.3.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.7",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-apppool-vmss001')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.4.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.8",
+                "hasBgpOverride": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2020-11-01",
+            "name": "[concat(parameters('name'), '/project-aks-apppool-vmss002')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
+            ],
+            "properties": {
+                "addressPrefix": "172.20.5.0/24",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "172.16.0.9",
+                "hasBgpOverride": false
+            }
+        }
+    ],
+    "outputs": {
+        "resourceId": {
+            "value": "[resourceId('Microsoft.Network/routeTables', parameters('name'))]",
+            "type": "string"
+        }
     }
-  },
-  "variables": {},
-  "resources": [
-    {
-      "type": "Microsoft.Network/routeTables",
-      "apiVersion": "2020-11-01",
-      "name": "[parameters('name')]",
-      "location": "[parameters('regionId')]",
-      "tags": "[parameters('tags')]", 
-      "properties": {
-        "disableBgpRoutePropagation": false,
-        "routes": [
-          {
-            "name": "mmc-aks-agentpool-vmss000",
-            "properties": {
-              "addressPrefix": "172.20.0.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.4",
-              "hasBgpOverride": false
-            }
-          },
-          {
-            "name": "mmc-aks-agentpool-vmss001",
-            "properties": {
-              "addressPrefix": "172.20.1.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.5",
-              "hasBgpOverride": false
-            }
-          },
-          {
-            "name": "mmc-aks-agentpool-vmss002",
-            "properties": {
-              "addressPrefix": "172.20.2.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.6",
-              "hasBgpOverride": false
-            }
-          },
-          {
-            "name": "mmc-aks-apppool-vmss000",
-            "properties": {
-              "addressPrefix": "172.20.3.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.7",
-              "hasBgpOverride": false
-            }
-          },
-          {
-            "name": "mmc-aks-apppool-vmss001",
-            "properties": {
-              "addressPrefix": "172.20.4.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.8",
-              "hasBgpOverride": false
-            }
-          },
-          {
-            "name": "mmc-aks-apppool-vmss002",
-            "properties": {
-              "addressPrefix": "172.20.5.0/24",
-              "nextHopType": "VirtualAppliance",
-              "nextHopIpAddress": "172.16.0.9",
-              "hasBgpOverride": false
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-agentpool-vmss000')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.0.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.4",
-        "hasBgpOverride": false
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-agentpool-vmss001')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.1.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.5",
-        "hasBgpOverride": false
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-agentpool-vmss002')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.2.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.6",
-        "hasBgpOverride": false
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-apppool-vmss000')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.3.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.7",
-        "hasBgpOverride": false
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-apppool-vmss001')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.4.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.8",
-        "hasBgpOverride": false
-      }
-    },
-    {
-      "type": "Microsoft.Network/routeTables/routes",
-      "apiVersion": "2020-11-01",
-      "name": "[concat(parameters('name'), '/mmc-aks-apppool-vmss002')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/routeTables', parameters('name'))]"
-      ],
-      "properties": {
-        "addressPrefix": "172.20.5.0/24",
-        "nextHopType": "VirtualAppliance",
-        "nextHopIpAddress": "172.16.0.9",
-        "hasBgpOverride": false
-      }
-    }
-  ],
-  "outputs": {
-    "resourceId": {
-      "value": "[resourceId('Microsoft.Network/routeTables', parameters('name'))]",
-      "type": "string"
-    }
-  }
 }
