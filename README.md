@@ -10,6 +10,7 @@ Terraform pipeline [![Build Status](https://dev.azure.com/BU5/IaC-aks-boilerplat
 
 ## Architecture
 
+![Multi-cluster microservice overall architecture](./azure-k8-service/architecture/diagrams/images/overall-architecture.png)
 ## For DevOps 
 
 
